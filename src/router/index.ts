@@ -1,6 +1,8 @@
 // Composables
 import { createRouter, createWebHistory } from 'vue-router'
 
+import store from '@/data/Store'
+
 const routes = [
   {
     path: '/',
@@ -40,6 +42,17 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
+})
+
+router.beforeEach((to, from) => {
+
+  if (to.name !== "Home" && !store.state.user) {
+    return { name: 'Home' }
+  }
+
+  if (to.name === "Home" && store.state.user) {
+    return { name: 'Dashboard' }
+  }
 })
 
 export default router
