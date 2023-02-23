@@ -4,6 +4,12 @@
       <v-img src="@/assets/images/iups-scavenger-hunt-logo-light.png" :width="200" />
     </v-app-bar-title>
 
+    <v-btn
+      v-if="user"
+      icon="mdi-home"
+      color="primary"
+    ></v-btn>
+
     <template v-slot:append>
       <div class="text-center">
         <v-menu
@@ -31,7 +37,7 @@
               <v-btn
                 color="primary"
                 variant="text"
-                @click="menu = false"
+                @click="signOut"
               >
                 Sign Out
               </v-btn>
@@ -54,12 +60,20 @@
 
 <script lang="ts" setup>
   import { ref } from 'vue'
+  import { useRouter } from 'vue-router'
+  import { supabase } from '@/services/Supabase'
   import store from '@/data/Store'
 
-  const user = ref(store.state.user)
+  const router = useRouter()
 
-  const fav = ref(true)
+  const user = ref(store.state.user)
   const menu = ref(false)
-  const message = ref(false)
-  const hints = ref(true)
+
+  const signOut = () => {
+    menu.value = false
+    store.methods.destroySession()
+    supabase.auth.signOut()
+
+    router.push('/')
+  }
 </script>

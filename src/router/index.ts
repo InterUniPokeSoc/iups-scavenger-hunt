@@ -16,7 +16,7 @@ const routes = [
         // which is lazy-loaded when the route is visited.
         component: () => import(/* webpackChunkName: "home" */ '@/views/Home.vue'),
         meta : {
-          requiresGuest: true,
+          authenticationRequired: false,
         }
       },
       {
@@ -24,7 +24,7 @@ const routes = [
         name: 'Dashboard',
         component: () => import(/* webpackChunkName: "dashboard" */ '@/views/Dashboard.vue'),
         meta : {
-          requiresGuest: false,
+          authenticationRequired: true,
         }
       },
       {
@@ -32,7 +32,7 @@ const routes = [
         name: 'Hunt',
         component: () => import(/* webpackChunkName: "hunt" */ '@/views/Hunt.vue'),
         meta : {
-          requiresGuest: false,
+          authenticationRequired: true,
         }
       },
     ],
@@ -45,8 +45,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from) => {
-
-  if (to.name !== "Home" && !store.state.user) {
+  if (to.meta.authenticationRequired && !store.state.user) {
     return { name: 'Home' }
   }
 

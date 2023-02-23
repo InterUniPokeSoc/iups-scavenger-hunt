@@ -16,7 +16,10 @@
                       End Date
                       </th>
                       <th class="text-center">
-                      Result
+                      Score
+                      </th>
+                      <th class="text-center">
+                      Tier
                       </th>
                       <th class="text-center">
                       Actions
@@ -28,11 +31,16 @@
                       v-for="league, index in leagues"
                       :key="index"
                   >
-                    <td>{{ index }}</td>
+                    <td>{{ index + 1 }}</td>
                     <td>{{ "01/01/2023" }}</td>
                     <td>
                     <v-row class="justify-center align-center ma-1">
-                      <p class="font-weight-bold">{{ "2/5" }}</p>
+                      <p class="font-weight-bold">{{ league }}</p>
+                    </v-row>
+                    </td>
+                    <td>
+                    <v-row class="justify-center align-center ma-1">
+                      <p class="font-weight-bold">{{ getResult(league) }}</p>
                     </v-row>
                     </td>
                     <td><v-btn href="/hunt" prepend-icon="mdi-magnify">View</v-btn></td>
@@ -51,13 +59,25 @@
     import { ref } from 'vue'
     import { supabase } from '@/services/Supabase'
 
-    let leagues = ["", "", ""]
+    let leagues = [Math.floor(Math.random() * 1000), 
+    Math.floor(Math.random() * 1000), 
+    Math.floor(Math.random() * 1000), 
+    Math.floor(Math.random() * 1000), 
+    Math.floor(Math.random() * 1000), 
+    Math.floor(Math.random() * 1000),
+    Math.floor(Math.random() * 1000),
+    Math.floor(Math.random() * 1000),
+    Math.floor(Math.random() * 1000),
+    Math.floor(Math.random() * 1000),
+    Math.floor(Math.random() * 1000),
+    Math.floor(Math.random() * 1000)]
     let user: any = ref()
 
-    try {
-      // var { data: { returnedUser } } = await supabase.auth.getUser()
-      // user = returnedUser
-    } catch {
+    const getResult = (result: any) => {
+      var index = leagues.sort().indexOf(result)
 
+      var scaled = Math.floor((index / leagues.length) * 100)
+
+      return scaled
     }
   </script>
