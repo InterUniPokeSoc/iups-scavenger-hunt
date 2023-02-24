@@ -59,14 +59,20 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref } from 'vue'
+  import { ref, watch } from 'vue'
   import { useRouter } from 'vue-router'
   import { supabase } from '@/services/Supabase'
   import store from '@/data/Store'
 
   const router = useRouter()
+  
+  const user: any = ref(null)
 
-  const user = ref(store.state.user)
+  watch(
+    () => user.value = store.state.user,
+    store.state.user
+  )
+
   const menu = ref(false)
 
   const signOut = () => {

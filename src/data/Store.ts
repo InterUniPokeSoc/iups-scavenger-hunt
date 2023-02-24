@@ -2,7 +2,10 @@ import { reactive } from "vue"
 
 const state = reactive({
     user: null as any,
-    username: null as any
+    username: null as any,
+    profilePicUrl: null as any,
+    selectedHunt: null as any,
+    selectedHint: null as any
 });
 
 const methods = {
