@@ -35,10 +35,10 @@
                       :key="index"
                   >
                     <td>{{ index + 1 }}</td>
-                    <td>{{ "01/01/2023" }}</td>
+                    <td>{{ hunt.endDate }}</td>
                     <td>
                     <v-row class="justify-center align-center ma-1">
-                      <p class="font-weight-bold">{{ hunt }}</p>
+                      <p class="font-weight-bold">{{ hunt.score }}</p>
                     </v-row>
                     </td>
                     <td>
