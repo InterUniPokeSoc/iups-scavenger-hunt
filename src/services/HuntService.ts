@@ -1,32 +1,23 @@
 import { supabase } from '@/services/Supabase'
+import { ParticipationService } from '@/services/ParticipationService'
 import { Hunt } from '@/models/Hunt'
 
 export class HuntService {
-
     static readonly huntFetchError = new Error("No Hunts Found")
 
-    static async getHunts(): Promise<Hunt[]> {
-        return this.fetchHunts()
-        .then((hunts) => {
-            const result: any[] = hunts.map((hunt) => {
-                new Hunt(hunt.id, hunt.start_date, hunt.end_date, hunt.hidden)
-            })
+    static async fetchHunts(userId: string): Promise<Hunt[]> {
+        const participations = await ParticipationService.fetchParticipatingHuntIdsFor(userId)
 
-            return result
-        })
-        .catch(() => {
-            throw this.huntFetchError
-        })
-    }
-
-    private static async fetchHunts(): Promise<any[]> {
         const { data: hunts, error: error } = await supabase
             .from('hunt')
             .select('*')
             .eq('hidden', false)
+            .in('id', participations)
 
-        if (hunts == null) { throw this.huntFetchError }
+        if (!hunts || error) throw this.huntFetchError
 
-        return hunts
+        return hunts.map((hunt) => {
+            return new Hunt(hunt.id, hunt.start_date, hunt.end_date, hunt.hidden)
+        })
     }
 }

@@ -64,6 +64,7 @@
     import { ref, onMounted } from 'vue'
     import { HuntService } from '@/services/HuntService'
     import { Hunt } from '@/models/Hunt'
+    import store from '@/data/Store'
 
     let paginationPointer = ref(0)
     let loading = ref(false)
@@ -74,8 +75,12 @@
     onMounted(async () => {
       loading.value = true
 
+      let userId = store.state.user.id
+
       try {
-        await HuntService.getHunts().then((result) => {
+        if (!userId) throw Error("UserId is Invalid")
+
+        await HuntService.fetchHunts(userId).then((result) => {
           hunts.value = result
 
           loading.value = false
