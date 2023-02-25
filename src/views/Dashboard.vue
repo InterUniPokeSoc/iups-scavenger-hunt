@@ -1,9 +1,12 @@
 <template>
     <v-main>
       <v-container>
-          <v-responsive class="d-flex align-center text-center fill-height" id="main-responsive-container">
+          <v-responsive v-if="loading" class="d-flex align-center text-center fill-height" id="main-responsive-container">
+            <v-progress-circular color="primary" indeterminate></v-progress-circular>
+          </v-responsive>
+
+          <v-responsive v-else class="d-flex align-center text-center fill-height" id="main-responsive-container">
             <h1>Hunt Dashboard</h1>
-            <h1>{{ user }}</h1>
             <v-card>
               <v-card-text>
                 <v-table class="elevation-1">
@@ -28,25 +31,27 @@
                   </thead>
                   <tbody>
                   <tr
-                      v-for="league, index in leagues"
+                      v-for="hunt, index in hunts"
                       :key="index"
                   >
                     <td>{{ index + 1 }}</td>
                     <td>{{ "01/01/2023" }}</td>
                     <td>
                     <v-row class="justify-center align-center ma-1">
-                      <p class="font-weight-bold">{{ league }}</p>
+                      <p class="font-weight-bold">{{ hunt }}</p>
                     </v-row>
                     </td>
                     <td>
                     <v-row class="justify-center align-center ma-1">
-                      <p class="font-weight-bold">{{ getResult(league) }}</p>
+                      <p class="font-weight-bold">{{ getResult(hunt) }}</p>
                     </v-row>
                     </td>
                     <td><v-btn href="/hunt" prepend-icon="mdi-magnify">View</v-btn></td>
                   </tr>
                   </tbody>
                 </v-table>
+
+                <v-pagination :length="1" class="ma-2"></v-pagination>
               </v-card-text>
             </v-card>
 
@@ -56,28 +61,31 @@
   </template>
   
   <script lang="ts" setup>
-    import { ref } from 'vue'
-    import { supabase } from '@/services/Supabase'
+    import { ref, onMounted } from 'vue'
+    import { HuntService } from '@/services/HuntService'
+    import { Hunt } from '@/models/Hunt'
 
-    let leagues = [Math.floor(Math.random() * 1000), 
-    Math.floor(Math.random() * 1000), 
-    Math.floor(Math.random() * 1000), 
-    Math.floor(Math.random() * 1000), 
-    Math.floor(Math.random() * 1000), 
-    Math.floor(Math.random() * 1000),
-    Math.floor(Math.random() * 1000),
-    Math.floor(Math.random() * 1000),
-    Math.floor(Math.random() * 1000),
-    Math.floor(Math.random() * 1000),
-    Math.floor(Math.random() * 1000),
-    Math.floor(Math.random() * 1000)]
-    let user: any = ref()
+    let paginationPointer = ref(0)
+    let loading = ref(false)
+    let error = ref(false)
+
+    let hunts = ref(new Array<Hunt>())
+
+    onMounted(async () => {
+      loading.value = true
+
+      try {
+        await HuntService.getHunts().then((result) => {
+          hunts.value = result
+
+          loading.value = false
+        })
+      } catch {
+        error.value = true
+      }
+    })
 
     const getResult = (result: any) => {
-      var index = leagues.sort().indexOf(result)
-
-      var scaled = Math.floor((index / leagues.length) * 100)
-
-      return scaled
+      return 0
     }
   </script>
