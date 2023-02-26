@@ -4,20 +4,23 @@ export class Hint {
     question: string
     imageUrl: string | null
     order: number
-    max_value: number
+    maxValue: number
+    userScore: number | null
 
     constructor(id: number,
-        hintId: number,
+        huntId: number,
         question: string,
         imageUrl: string | null = null, 
         order: number, 
-        max_value: number) {
+        maxValue: number,
+        userScore: number | null = null) {
 
         this.id = id
-        this.huntId = hintId
+        this.huntId = huntId
         this.question = question
         this.imageUrl = imageUrl
         this.order = order
-        this.max_value = max_value
+        this.maxValue = maxValue
+        this.userScore = userScore
     }
 }

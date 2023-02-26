@@ -3,9 +3,9 @@ export class Participation {
     huntId: number
 
     constructor(id: number,
-        hintId: number) {
+        huntId: number) {
 
         this.id = id
-        this.huntId = hintId
+        this.huntId = huntId
     }
 }

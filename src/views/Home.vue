@@ -2,18 +2,18 @@
   <v-main>
     <v-container>
         <v-responsive class="d-flex align-center text-center fill-height" id="main-responsive-container">
-          <v-card
-            variant="outlined"
-          >
+          <v-card variant="outlined">
             <v-card-item class="justify-center">
-              <div>
-                <v-img src="@/assets/images/iups-scavenger-hunt-logo-light.png" width="400"/>
+              <v-img src="@/assets/images/iups-scavenger-hunt-logo-light.png" width="400" class="ma-auto"/>
 
-                <p class="ma-3">Please log in with your Discord account to continue.</p>
-              </div>
+              <p class="ma-3">Please log in with your Discord account to continue</p>
+
+              <p class="ma-3">You can remove permissions for this app through your Discord settings</p>
+
+              <v-switch label="I agree to have my Email, Discord Id and Profile Image stored and processed by I-UPS using Supabase" color="indigo" inset v-model="gdprAgreement"></v-switch>
             </v-card-item>
             <v-card-actions class="justify-center">
-              <v-btn @click="handleLogin" variant="tonal" color=#7289da>Log in with Discord</v-btn>
+              <v-btn @click="handleLogin" variant="tonal" color=#7289da :disabled="!gdprAgreement">Log in with Discord</v-btn>
             </v-card-actions>
           </v-card>
 
@@ -32,6 +32,8 @@
 
   const loading = ref(false)
   const errorMessage = ref("")
+
+  const gdprAgreement = ref(false)
 
   const handleLogin = async () => {
     try {

@@ -30,13 +30,15 @@ export class HuntService {
                 if (score.huntId == hunt.id) return score
             })
 
+            const hasParticipation = participations.includes(hunt.id)
+
             if (huntScores) {
                 const score = huntScores.reduce((sum, huntScore) => sum += huntScore.score, 0)
 
-                return new Hunt(hunt.id, hunt.start_date, hunt.end_date, hunt.hidden, score)
+                return new Hunt(hunt.id, hunt.start_date, hunt.end_date, hunt.hidden, score, hasParticipation)
             }
 
-            return new Hunt(hunt.id, hunt.start_date, hunt.end_date, hunt.hidden, 0)
+            return new Hunt(hunt.id, hunt.start_date, hunt.end_date, hunt.hidden, 0, hasParticipation)
         })
     }
 }

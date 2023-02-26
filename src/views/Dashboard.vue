@@ -46,7 +46,9 @@
                       <p class="font-weight-bold">{{ getResult(hunt) }}</p>
                     </v-row>
                     </td>
-                    <td><v-btn href="/hunt" prepend-icon="mdi-magnify">View</v-btn></td>
+                    <td>
+                      <v-btn :href="`./hunt?huntId=${hunt.id}`" :prepend-icon="hunt.hasParticipation ? 'mdi-magnify' : 'mdi-plus'">{{ hunt.hasParticipation ? 'View' : 'Join' }}</v-btn>
+                    </td>
                   </tr>
                   </tbody>
                 </v-table>
@@ -62,9 +64,12 @@
   
   <script lang="ts" setup>
     import { ref, onMounted } from 'vue'
+    import { useRouter } from 'vue-router'
     import { HuntService } from '@/services/HuntService'
     import { Hunt } from '@/models/Hunt'
     import store from '@/data/Store'
+
+    let router = useRouter()
 
     let paginationPointer = ref(0)
     let loading = ref(false)

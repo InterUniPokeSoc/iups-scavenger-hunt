@@ -8,6 +8,7 @@
       v-if="user"
       icon="mdi-home"
       color="primary"
+      href="./dashboard"
     ></v-btn>
 
     <template v-slot:append>
