@@ -38,4 +38,12 @@ export class ResponseService {
             }
         })
     }
+
+    static async writeResponse(hintId: number, userId: string): Promise<any> {
+        // TODO: Get participation ID
+
+        // const { data: result, error: error } = await supabase
+        //     .from('response')
+            // .insert([{ participation_id: participationId, answer_id: answer_id }])
+    }
 }

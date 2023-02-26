@@ -35,6 +35,14 @@ const routes = [
           authenticationRequired: true,
         }
       },
+      {
+        path: 'hint',
+        name: 'Hint',
+        component: () => import(/* webpackChunkName: "hint" */ '@/views/Hint.vue'),
+        meta : {
+          authenticationRequired: true,
+        }
+      },
     ],
   },
 ]

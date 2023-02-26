@@ -47,7 +47,7 @@
                     </v-row>
                     </td>
                     <td>
-                      <v-btn :href="`./hunt?huntId=${hunt.id}`" :prepend-icon="hunt.hasParticipation ? 'mdi-magnify' : 'mdi-plus'">{{ hunt.hasParticipation ? 'View' : 'Join' }}</v-btn>
+                      <v-btn @click="goToHunt(hunt.id)" :prepend-icon="hunt.hasParticipation ? 'mdi-magnify' : 'mdi-plus'">{{ hunt.hasParticipation ? 'View' : 'Join' }}</v-btn>
                     </td>
                   </tr>
                   </tbody>
@@ -68,6 +68,7 @@
     import { HuntService } from '@/services/HuntService'
     import { Hunt } from '@/models/Hunt'
     import store from '@/data/Store'
+    import { Local, LocalProperty } from '@/data/Local'
 
     let router = useRouter()
 
@@ -97,5 +98,11 @@
 
     const getResult = (result: any) => {
       return 0
+    }
+
+    const goToHunt = (huntId: number) => {
+      Local.setProperty(LocalProperty.SELECTED_HUNT, huntId)
+
+      router.push('/hunt')
     }
   </script>

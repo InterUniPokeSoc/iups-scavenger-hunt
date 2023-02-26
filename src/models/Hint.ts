@@ -1,4 +1,8 @@
+import { Answer } from '@/models/Answer'
+
 export class Hint {
+
+
     id: number
     huntId: number
     question: string
@@ -6,6 +10,7 @@ export class Hint {
     order: number
     maxValue: number
     userScore: number | null
+    answers: Answer[] | null
 
     constructor(id: number,
         huntId: number,
@@ -13,7 +18,8 @@ export class Hint {
         imageUrl: string | null = null, 
         order: number, 
         maxValue: number,
-        userScore: number | null = null) {
+        userScore: number | null = null,
+        answers: Answer[] | null = null) {
 
         this.id = id
         this.huntId = huntId
@@ -22,5 +28,6 @@ export class Hint {
         this.order = order
         this.maxValue = maxValue
         this.userScore = userScore
+        this.answers = answers
     }
 }

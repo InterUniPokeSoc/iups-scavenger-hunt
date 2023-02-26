@@ -1,24 +1,24 @@
 import { supabase } from '@/services/Supabase'
-import { Response } from '@/models/Response'
+import { Answer } from '@/models/Answer'
 
 export class AnswerService {
 
     static readonly answerFetchError = new Error("No Answer Found")
 
-    // static async fetchScoresFor(huntIds: number[], userId: string): Promise<any[]> {
-    //     const { data: results, error: error } = await supabase
-    //         .from('response')
-    //         .select('participation(user_id), answer(percentage_value, hint(max_value, hunt(id)))')
-    //         .eq('participation.user_id', userId)
-    //         .in('answer.hint.hunt.id', huntIds)
+    static async fetchAnswers(hintId: number): Promise<Answer[]> {
+        console.log("HINTID: "+hintId)
 
-    //     if (results == null) return []
+        const { data: answers, error: error } = await supabase
+            .from('answer')
+            .select('*')
+            .eq('hint_id', hintId)
 
-    //     return results.map((result) => {
-    //         return {
-    //             huntId: result.answer.hint.hunt.id,
-    //             score: Math.floor((result.answer.percentage_value / 100) * result.answer.hint.max_value)
-    //         }
-    //     })
-    // }
+        console.log("ANSWERS FOUND: "+JSON.stringify(answers))
+
+        if (answers == null) return []
+
+        return answers.map((answer) => {
+            return new Answer(answer.id, answer.hint_id, answer.answer, answer.percentage_value)
+        })
+    }
 }
