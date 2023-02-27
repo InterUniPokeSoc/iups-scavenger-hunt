@@ -38,19 +38,25 @@
                   v-for="hint, index in hints"
                   :key="index"
               >
-                <td>{{ hint.id }}</td>
+                <td>{{ hint.id + 1 }}</td>
                 <td>
                   <v-row v-if="hint.userScore" class="justify-center align-center ma-1">
                     <v-chip class="ma-1" :color="hint.userScore > 0 ? 'green' : 'red'">{{ hint.userScore }}</v-chip>
                     {{ `/ ${hint.maxValue}` }}
                   </v-row>
-                  <v-row v-else-if="hints[index-1].userScore" class="justify-center align-center ma-1">
+                  <v-row v-else-if="hints[index-1]?.userScore" class="justify-center align-center ma-1">
                     <v-chip class="ma-1" color="orange">In Progress</v-chip>
                   </v-row>
                 </td>
                 <td>
-                  <v-btn @click="goToHint(hint.id)" prepend-icon="mdi-pencil" :disabled="hint.userScore != null || hints[index-1].userScore == null">
-                    {{ hint.userScore ? 'Answered' : hints[index-1].userScore ? 'Start' : 'Unavailable' }}
+                  <v-btn 
+                    @click="goToHint(hint.id)" 
+                    :prepend-icon="hint.userScore ? 'mdi-check-circle' : index == 0 || hints[index-1]?.userScore ? 'mdi-pencil' : 'mdi-cancel'" 
+                    :disabled="!hintAvailable(index)"
+                    variant="outlined"
+                    :color="hint.userScore ? 'teal' : index == 0 || hints[index-1]?.userScore ? 'deep-orange' : 'pink'"
+                  >
+                    {{ hint.userScore ? 'Answered' : index == 0 || hints[index-1]?.userScore ? 'Start' : 'Unavailable' }}
                   </v-btn>
                 </td>
               </tr>
@@ -67,7 +73,7 @@
 <script lang="ts" setup>
   import { ref, onMounted } from 'vue'
   import { useRouter } from 'vue-router'
-  import { HintService } from '@/services/HintService'
+  import {HintService } from '@/services/HintService'
   import { Hint } from '@/models/Hint'
   import store from '@/data/Store'
   import { Local, LocalProperty } from '@/data/Local'
@@ -94,8 +100,6 @@
 
     await HintService.fetchHintsFor(Number(huntId.value), userId.value).then((result) => {
 
-      console.log("HINTS FOUND FOR HUNT: "+JSON.stringify(result))
-
       hints.value = result
 
       loading.value = false
@@ -104,6 +108,12 @@
       loading.value = false
     })
   })
+
+  const hintAvailable = (index: number): boolean =>  {
+    if (index == 0 && hints.value[index]?.userScore == null) return true
+
+    return (hints.value[index]?.userScore != null || hints.value[index-1]?.userScore != null)
+  }
 
   const getPercentageScore = (score: number, max: number) => {
     return Math.floor((score / max) * 100)

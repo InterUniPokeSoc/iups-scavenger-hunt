@@ -5,6 +5,22 @@ export class ParticipationService {
 
     static readonly participationFetchError = new Error("No Participations Found")
 
+    static readonly participationJoinError = new Error("Participation Join Error")
+
+    static async fetchParticipationIdFor(huntId: number, userId: string): Promise<number> {
+        const { data: participations, error: error } = await supabase
+            .from('participation')
+            .select('*')
+            .eq('hunt_id', huntId)
+            .eq('user_id', userId)
+
+        if (participations == null || participations[0] == null) throw this.participationFetchError
+
+        let participation = participations[0]
+
+        return participation.id
+    }
+
     static async fetchParticipationsFor(userId: string): Promise<Participation[]> {
         const { data: participations, error: error } = await supabase
             .from('participation')
@@ -29,5 +45,13 @@ export class ParticipationService {
         return participations.map((participation) => {
             return participation.hunt_id
         })
+    }
+
+    static async addParticipationFor(huntId: number, userId: string) {
+        const { data: result, error: error } = await supabase
+            .from('participation')
+            .insert([{ user_id: userId, hunt_id: huntId }])
+
+        if (error) throw this.participationJoinError
     }
 }

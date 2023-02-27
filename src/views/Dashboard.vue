@@ -9,7 +9,9 @@
             <h1>Hunt Dashboard</h1>
             <v-card>
               <v-card-text>
-                <v-table class="elevation-1">
+                <v-table 
+                  class="elevation-1"
+                >
                   <thead>
                   <tr>
                       <th class="text-center">
@@ -38,16 +40,27 @@
                     <td>{{ hunt.endDate }}</td>
                     <td>
                     <v-row class="justify-center align-center ma-1">
-                      <p class="font-weight-bold">{{ hunt.score }}</p>
+                      <v-chip v-if="hunt.hasParticipation" :color="hunt.score >= 600 ? 'green' : hunt.score >= 100 ? 'deep-orange' : 'pink'">
+                        {{ hunt.score }}
+                      </v-chip>
                     </v-row>
                     </td>
                     <td>
                     <v-row class="justify-center align-center ma-1">
-                      <p class="font-weight-bold">{{ getResult(hunt) }}</p>
+                      <v-chip v-if="hunt.hasParticipation" color="deep-orange">
+                        TBC
+                      </v-chip>
                     </v-row>
                     </td>
                     <td>
-                      <v-btn @click="goToHunt(hunt.id)" :prepend-icon="hunt.hasParticipation ? 'mdi-magnify' : 'mdi-plus'">{{ hunt.hasParticipation ? 'View' : 'Join' }}</v-btn>
+                      <v-btn 
+                        @click="hunt.hasParticipation ? goToHunt(hunt) : joinHunt(hunt)" 
+                        :prepend-icon="hunt.hasParticipation ? 'mdi-magnify' : 'mdi-plus'"
+                        :color="hunt.hasParticipation ? 'black' : 'deep-orange'"
+                        variant="outlined"
+                      >
+                        {{ hunt.hasParticipation ? 'View' : 'Join' }}
+                      </v-btn>
                     </td>
                   </tr>
                   </tbody>
@@ -56,6 +69,23 @@
                 <v-pagination :length="1" class="ma-2"></v-pagination>
               </v-card-text>
             </v-card>
+
+            <v-snackbar
+              v-model="joinSnackbar"
+              :timeout="joinSnackbarTimeout"
+            >
+              {{ "Joined Hunt" }}
+
+              <template v-slot:actions>
+                <v-btn
+                  color="green"
+                  variant="text"
+                  @click="joinSnackbar = false"
+                >
+                  Close
+                </v-btn>
+              </template>
+            </v-snackbar>
 
           </v-responsive>
       </v-container>
@@ -69,6 +99,7 @@
     import { Hunt } from '@/models/Hunt'
     import store from '@/data/Store'
     import { Local, LocalProperty } from '@/data/Local'
+    import { ParticipationService } from '@/services/ParticipationService'
 
     let router = useRouter()
 
@@ -76,32 +107,55 @@
     let loading = ref(false)
     let error = ref(false)
 
+    let joinSnackbar = ref(false)
+    let joinSnackbarTimeout = ref(2000)
+
     let hunts = ref(new Array<Hunt>())
+    let userId = ref(store.state.user.id)
 
     onMounted(async () => {
+      if (!userId?.value) error.value = true
+
+      await getHunts()
+    })
+
+    const getHunts = async () => {
       loading.value = true
 
-      let userId = store.state.user.id
+      await HuntService.fetchHunts(userId.value).then((result) => {
+        hunts.value = result
 
-      try {
-        if (!userId) throw Error("UserId is Invalid")
-
-        await HuntService.fetchHunts(userId).then((result) => {
-          hunts.value = result
-
-          loading.value = false
-        })
-      } catch {
+        loading.value = false
+      }).catch(() => {
         error.value = true
-      }
-    })
+        loading.value = false
+      })
+    }
 
     const getResult = (result: any) => {
       return 0
     }
 
-    const goToHunt = (huntId: number) => {
-      Local.setProperty(LocalProperty.SELECTED_HUNT, huntId)
+    const joinHunt = async (hunt: Hunt) => {
+      if (hunt.hasParticipation) return
+
+      loading.value = true
+      
+      await ParticipationService.addParticipationFor(hunt.id, userId.value).catch((e) => {
+        error.value = true
+      }).then(async () => {
+        joinSnackbar.value = true
+
+        await getHunts().finally(() => {
+          loading.value = false
+        })
+      })
+    }
+
+    const goToHunt = (hunt: Hunt) => {
+      if (!hunt.hasParticipation) return
+
+      Local.setProperty(LocalProperty.SELECTED_HUNT, hunt.id)
 
       router.push('/hunt')
     }

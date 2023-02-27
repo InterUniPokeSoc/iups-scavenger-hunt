@@ -1,9 +1,28 @@
 import { supabase } from '@/services/Supabase'
 import { Response } from '@/models/Response'
+import { ParticipationService } from './ParticipationService'
+import { Hint } from '@/models/Hint'
 
 export class ResponseService {
 
     static readonly responseFetchError = new Error("No Response Found")
+    static readonly responseWriteError = new Error("Response Write Error")
+
+    static async fetchResponseFor(huntId: number, userId: string): Promise<Response> {
+        const { data: results, error: error } = await supabase
+            .from('response')
+            .select('id, participation(user_id), answer(percentage_value, hint(max_value, hunt(id)))')
+            .eq('participation.user_id', userId)
+            .eq('answer.hint.hunt.id', huntId)
+
+        if (error || results == null || results[0] == null) throw this.responseFetchError
+
+        let result: any = results[0]
+
+        let score = Math.floor((result.answer.percentage_value / 100) * result.answer.hint.max_value)
+
+        return new Response(result.id, result.answer.hint.id, result.participation.id, score)
+    }
 
     static async fetchScoresFor(huntIds: number[], userId: string): Promise<any[]> {
         const { data: results, error: error } = await supabase
@@ -29,6 +48,8 @@ export class ResponseService {
             .eq('participation.user_id', userId)
             .eq('answer.hint.hunt.id', huntId)
 
+        if (error) throw this.responseFetchError
+
         if (results == null) return []
 
         return results.map((result: any) => {
@@ -39,11 +60,15 @@ export class ResponseService {
         })
     }
 
-    static async writeResponse(hintId: number, userId: string): Promise<any> {
-        // TODO: Get participation ID
+    static async writeResponse(hint: Hint, answerId: number, userId: string): Promise<any> {
+        let participationId = await ParticipationService.fetchParticipationIdFor(hint.huntId, userId)
 
-        // const { data: result, error: error } = await supabase
-        //     .from('response')
-            // .insert([{ participation_id: participationId, answer_id: answer_id }])
+        if (participationId == null) throw this.responseWriteError
+
+        const { data: result, error: error } = await supabase
+            .from('response')
+            .insert([{ participation_id: participationId, answer_id: answerId }])
+
+        if (error) throw this.responseWriteError
     }
 }

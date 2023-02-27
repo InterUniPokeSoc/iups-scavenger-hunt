@@ -69,11 +69,13 @@
   import { useRouter } from 'vue-router'
   import { HintService } from '@/services/HintService'
   import { Hint } from '@/models/Hint'
+  import { Answer } from '@/models/Answer'
 
   import store from '@/data/Store'
 
   import { Local, LocalProperty } from '@/data/Local'
   import router from '@/router'
+import { ResponseService } from '@/services/ResponseService'
 
   let hintId = ref(Local.getProperty(LocalProperty.SELECTED_HINT))
 
@@ -110,19 +112,42 @@
     })
   })
 
-  const checkAnswer = () => {
+  const checkAnswer = async () => {
     checking.value = true
 
-    let answers = hint.value?.answers?.flatMap((answer) => {
-      return answer.answer.toLowerCase()
+    let hintAnswers = hint.value?.answers?.flatMap((hintAnswer) => {
+      return hintAnswer.answer.toLowerCase()
     })
 
-    if (answer.value && answers?.includes(answer.value.toLowerCase())) {
-      correct.value = true
+    if (answer.value && hintAnswers?.includes(answer.value.toLowerCase().trim())) {
+      loading.value = true
+
+      await uploadAnswer()
     } else {
       incorrect.value = true
     }
 
     checking.value = false
+  }
+
+  const uploadAnswer = async () => {
+    let answerId = hint.value?.answers?.flatMap((hintAnswer: Answer) => {
+      if (answer.value?.toLowerCase().trim() == hintAnswer.answer) return hintAnswer.id
+    })[0]
+
+    if (hint.value == null || answerId == null) {
+      error.value = true
+      loading.value = false
+      return
+    }
+
+    await ResponseService.writeResponse(hint.value, answerId, userId.value).catch(() => {
+      error.value = true
+      loading.value = false
+      return
+    })
+
+    loading.value = false
+    correct.value = true
   }
 </script>
