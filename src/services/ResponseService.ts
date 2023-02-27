@@ -2,6 +2,7 @@ import { supabase } from '@/services/Supabase'
 import { Response } from '@/models/Response'
 import { ParticipationService } from './ParticipationService'
 import { Hint } from '@/models/Hint'
+import { ScoreUtility } from '@/utilities/ScoreUtility'
 
 export class ResponseService {
 
@@ -36,7 +37,8 @@ export class ResponseService {
         return results.map((result: any) => {
             return {
                 huntId: result.answer.hint.hunt.id,
-                score: Math.floor((result.answer.percentage_value / 100) * result.answer.hint.max_value)
+                score: Math.floor((result.answer.percentage_value / 100) * result.answer.hint.max_value),
+                maxScore: result.answer.hint.max_value
             }
         })
     }
@@ -70,5 +72,29 @@ export class ResponseService {
             .insert([{ participation_id: participationId, answer_id: answerId }])
 
         if (error) throw this.responseWriteError
+    }
+
+    static async fetchAllScoresFor(huntId: number): Promise<number[]> {
+        const { data: results, error: error } = await supabase
+            .from('response')
+            .select('participation!inner(user_id), answer!inner(percentage_value, hint!inner(max_value, hunt!inner(id)))')
+            .eq('answer.hint.hunt.id', huntId)
+
+        if (error) throw this.responseFetchError
+
+        if (results == null) return []
+
+        // Find each score by a user and add then together, then store in dictionary with userId as key
+        let userCombinedScores = results.reduce((scores: any, response: any) => {
+            if (scores[response.participation.user_id] == null) scores[response.participation.user_id] = 0
+
+            scores[response.participation.user_id] += Math.floor((response.answer.percentage_value / 100) 
+                * response.answer.hint.max_value)
+
+            return scores
+        }, {})
+
+        // Remove the keys from the dictionary, values are now stored in an array
+        return Object.values(userCombinedScores)
     }
 }

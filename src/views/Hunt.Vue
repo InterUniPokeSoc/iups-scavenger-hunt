@@ -41,7 +41,7 @@
                 <td>{{ hint.id + 1 }}</td>
                 <td>
                   <v-row v-if="hint.userScore" class="justify-center align-center ma-1">
-                    <v-chip class="ma-1" :color="hint.userScore > 0 ? 'green' : 'red'">{{ hint.userScore }}</v-chip>
+                    <v-chip class="ma-1" :color="ScoreUtility.scoreToColour(hint.userScore, hint.maxValue)">{{ hint.userScore }}</v-chip>
                     {{ `/ ${hint.maxValue}` }}
                   </v-row>
                   <v-row v-else-if="hints[index-1]?.userScore" class="justify-center align-center ma-1">
@@ -77,6 +77,8 @@
   import { Hint } from '@/models/Hint'
   import store from '@/data/Store'
   import { Local, LocalProperty } from '@/data/Local'
+import { ResponseService } from '@/services/ResponseService'
+import { ScoreUtility } from '@/utilities/ScoreUtility'
 
   let router = useRouter()
 

@@ -39,16 +39,17 @@
                     <td>{{ index + 1 }}</td>
                     <td>{{ hunt.endDate }}</td>
                     <td>
-                    <v-row class="justify-center align-center ma-1">
-                      <v-chip v-if="hunt.hasParticipation" :color="hunt.score >= 600 ? 'green' : hunt.score >= 100 ? 'deep-orange' : 'pink'">
+                    <v-row v-if="hunt.hasParticipation" class="justify-center align-center ma-1">
+                      <v-chip :color="ScoreUtility.scoreToColour(hunt.score, hunt.maxScore)">
                         {{ hunt.score }}
                       </v-chip>
+                      <p class="ma-1">{{ `/ ${hunt.maxScore}` }}</p>
                     </v-row>
                     </td>
                     <td>
                     <v-row class="justify-center align-center ma-1">
-                      <v-chip v-if="hunt.hasParticipation" color="deep-orange">
-                        TBC
+                      <v-chip v-if="hunt.hasParticipation && hunt.tier" :color="ScoreUtility.tierToColor(hunt.tier)">
+                        {{ hunt.tier }}
                       </v-chip>
                     </v-row>
                     </td>
@@ -100,6 +101,7 @@
     import store from '@/data/Store'
     import { Local, LocalProperty } from '@/data/Local'
     import { ParticipationService } from '@/services/ParticipationService'
+import { ScoreUtility } from '@/utilities/ScoreUtility'
 
     let router = useRouter()
 

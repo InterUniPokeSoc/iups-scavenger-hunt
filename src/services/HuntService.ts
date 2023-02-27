@@ -2,6 +2,7 @@ import { supabase } from '@/services/Supabase'
 import { ParticipationService } from '@/services/ParticipationService'
 import { ResponseService } from '@/services/ResponseService'
 import { Hunt } from '@/models/Hunt'
+import { ScoreUtility } from '@/utilities/ScoreUtility'
 
 export class HuntService {
     static readonly huntFetchError = new Error("No Hunts Found")
@@ -25,7 +26,7 @@ export class HuntService {
         // Find all responses so that the total score for each hunt can be calculated.
         const scores = await ResponseService.fetchScoresFor(huntIds, userId)
 
-        return hunts.map((hunt) => {
+        let huntValues = hunts.map(async (hunt) => {
             const huntScores = scores.filter((score) => { 
                 if (score.huntId == hunt.id) return score
             })
@@ -33,12 +34,17 @@ export class HuntService {
             const hasParticipation = participations.includes(hunt.id)
 
             if (huntScores) {
-                const score = huntScores.reduce((sum, huntScore) => sum += huntScore.score, 0)
+                const score = huntScores.reduce((sum, huntScoreData) => sum += huntScoreData.score, 0)
+                const maxScore = huntScores.reduce((sum, huntScoreData) => sum += huntScoreData.maxScore, 0)
 
-                return new Hunt(hunt.id, hunt.start_date, hunt.end_date, hunt.hidden, score, hasParticipation)
+                let tier = await ScoreUtility.scoreToTier(score, hunt.id)
+
+                return new Hunt(hunt.id, hunt.start_date, hunt.end_date, hunt.hidden, score, maxScore, hasParticipation, tier)
             }
 
-            return new Hunt(hunt.id, hunt.start_date, hunt.end_date, hunt.hidden, 0, hasParticipation)
+            return new Hunt(hunt.id, hunt.start_date, hunt.end_date, hunt.hidden, 0, 0, hasParticipation)
         })
+
+        return Promise.all(huntValues)
     }
 }

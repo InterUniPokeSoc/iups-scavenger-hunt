@@ -56,7 +56,7 @@
 
               <v-col v-if="hint.userScore" class="justify-center align-center ma-1">
                 <h2>You Scored</h2>
-                <v-chip class="ma-1" :color="hint.userScore > 0 ? 'green' : 'red'">{{ hint.userScore }}</v-chip>
+                <v-chip class="ma-1" :color="ScoreUtility.scoreToColour(hint.userScore, hint.maxValue)">{{ hint.userScore }}</v-chip>
                 {{ `/ ${hint.maxValue}` }}
               </v-col>
             </v-card-text>
@@ -85,6 +85,7 @@
 
   import { Local, LocalProperty } from '@/data/Local'
   import router from '@/router'
+import { ScoreUtility } from '@/utilities/ScoreUtility'
 
   let hintId = ref(Local.getProperty(LocalProperty.SELECTED_HINT))
 
@@ -109,6 +110,10 @@
       return
     }
 
+    await fetchHint()
+  })
+
+  const fetchHint = async () => {
     await HintService.fetchHint(Number(hintId.value), userId.value).then((result) => {
       hint.value = result
 
@@ -120,12 +125,11 @@
       }
 
       loading.value = false
-    }).catch((e) => {
-      console.log(e)
+    }).catch(() => {
       error.value = true
       loading.value = false
     })
-  })
+  }
 
   const checkAnswer = async () => {
     checking.value = true
@@ -163,6 +167,8 @@
       loading.value = false
       return
     })
+
+    await fetchHint()
 
     loading.value = false
     correct.value = true
