@@ -146,17 +146,19 @@
   }
 
   const uploadAnswer = async () => {
-    let answerId = hint.value?.answers?.flatMap((hintAnswer: Answer) => {
-      if (answer.value?.toLowerCase().trim() == hintAnswer.answer) return hintAnswer.id
+    let filteredAnswer = hint.value?.answers?.filter((hintAnswer: Answer) => {
+      if (answer.value?.toLowerCase().trim() == hintAnswer.answer) { 
+        return hintAnswer
+      }
     })[0]
 
-    if (hint.value == null || answerId == null) {
+    if (hint.value == null || filteredAnswer == null) {
       error.value = true
       loading.value = false
       return
     }
 
-    await ResponseService.writeResponse(hint.value, answerId, userId.value).catch(() => {
+    await ResponseService.writeResponse(hint.value, filteredAnswer.id, userId.value).catch(() => {
       error.value = true
       loading.value = false
       return
