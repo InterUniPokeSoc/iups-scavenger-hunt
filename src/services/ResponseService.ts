@@ -8,26 +8,26 @@ export class ResponseService {
     static readonly responseFetchError = new Error("No Response Found")
     static readonly responseWriteError = new Error("Response Write Error")
 
-    static async fetchResponseFor(huntId: number, userId: string): Promise<Response> {
+    static async fetchResponseFor(hintId: number, userId: string): Promise<Response | null> {
         const { data: results, error: error } = await supabase
             .from('response')
-            .select('id, participation(user_id), answer(percentage_value, hint(max_value, hunt(id)))')
+            .select('id, participation!inner(user_id), answer!inner(answer, percentage_value, hint!inner(id, max_value))')
+            .eq('answer.hint.id', hintId)
             .eq('participation.user_id', userId)
-            .eq('answer.hint.hunt.id', huntId)
 
-        if (error || results == null || results[0] == null) throw this.responseFetchError
+        if (error || results == null || results[0] == null) return null
 
         let result: any = results[0]
 
         let score = Math.floor((result.answer.percentage_value / 100) * result.answer.hint.max_value)
 
-        return new Response(result.id, result.answer.hint.id, result.participation.id, score)
+        return new Response(result.id, result.answer.hint.id, result.participation.id, score, result.answer.answer)
     }
 
     static async fetchScoresFor(huntIds: number[], userId: string): Promise<any[]> {
         const { data: results, error: error } = await supabase
             .from('response')
-            .select('participation(user_id), answer(percentage_value, hint(max_value, hunt(id)))')
+            .select('participation!inner(user_id), answer!inner(percentage_value, hint!inner(max_value, hunt!inner(id)))')
             .eq('participation.user_id', userId)
             .in('answer.hint.hunt.id', huntIds)
 
@@ -44,7 +44,7 @@ export class ResponseService {
     static async fetchHintScoresFor(huntId: number, userId: string): Promise<any[]> {
         const { data: results, error: error } = await supabase
             .from('response')
-            .select('participation(user_id), answer(percentage_value, hint(id, max_value, hunt(id)))')
+            .select('participation!inner(user_id), answer!inner(percentage_value, hint!inner(id, max_value, hunt!inner(id)))')
             .eq('participation.user_id', userId)
             .eq('answer.hint.hunt.id', huntId)
 

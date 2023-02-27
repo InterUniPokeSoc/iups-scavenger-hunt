@@ -21,16 +21,19 @@
               <p class="ma-3">{{ (hint.question) }}</p>
               <v-img v-if="hint.imageUrl" :src="hint.imageUrl" height="200"></v-img>
 
-              <v-text-field v-model="answer" 
-              label="Your Answer"
-              :prepend-inner-icon="correct ? 'mdi-check-circle' : incorrect ? 'mdi-close-circle' : ''"
-              :error="incorrect"
-              :persistent-hint="true"
-              :hint="incorrect && !correct ? 'Please try again!' : ''"
-              variant="outlined" 
-              :disabled="correct || checking"
-              :loading="checking"
-              class="ma-3"></v-text-field>
+              <v-text-field 
+                v-model="answer" 
+                label="Your Answer"
+                :prepend-inner-icon="correct ? 'mdi-check-circle' : incorrect ? 'mdi-close-circle' : ''"
+                :error="incorrect"
+                :persistent-hint="true"
+                :hint="incorrect && !correct ? 'Please try again!' : ''"
+                variant="outlined" 
+                :disabled="correct || checking"
+                :loading="checking"
+                class="ma-3"
+              >
+              </v-text-field>
 
               <v-btn @click="checkAnswer()" 
               v-if="!correct" 
@@ -50,6 +53,12 @@
                 text="You have successfully completed this hint!"
                 variant="tonal"
               ></v-alert>
+
+              <v-col v-if="hint.userScore" class="justify-center align-center ma-1">
+                <h2>You Scored</h2>
+                <v-chip class="ma-1" :color="hint.userScore > 0 ? 'green' : 'red'">{{ hint.userScore }}</v-chip>
+                {{ `/ ${hint.maxValue}` }}
+              </v-col>
             </v-card-text>
 
             <v-card-actions>
@@ -68,6 +77,7 @@
   import { ref, Ref, onMounted } from 'vue'
   import { useRouter } from 'vue-router'
   import { HintService } from '@/services/HintService'
+  import { ResponseService } from '@/services/ResponseService'
   import { Hint } from '@/models/Hint'
   import { Answer } from '@/models/Answer'
 
@@ -75,7 +85,6 @@
 
   import { Local, LocalProperty } from '@/data/Local'
   import router from '@/router'
-import { ResponseService } from '@/services/ResponseService'
 
   let hintId = ref(Local.getProperty(LocalProperty.SELECTED_HINT))
 
@@ -100,13 +109,19 @@ import { ResponseService } from '@/services/ResponseService'
       return
     }
 
-    await HintService.fetchHint(Number(hintId.value)).then((result) => {
+    await HintService.fetchHint(Number(hintId.value), userId.value).then((result) => {
       hint.value = result
 
       if (!hint.value.answers || hint.value.answers.length < 1) error.value = true
 
+      if (hint.value.userScore) { 
+        correct.value = true 
+        answer.value = hint.value.userAnswer
+      }
+
       loading.value = false
-    }).catch(() => {
+    }).catch((e) => {
+      console.log(e)
       error.value = true
       loading.value = false
     })

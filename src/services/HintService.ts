@@ -31,14 +31,16 @@ export class HintService {
                 if (hintScore.hintId == hint.id) return hintScore
             })[0]
 
-            return new Hint(hint.id, hint.hunt_id, hint.question, hint.image_url, hint.order, hint.max_value, score?.score, null)
+            return new Hint(hint.id, hint.hunt_id, hint.question, hint.image_url, hint.order, hint.max_value, score?.score, null, null)
         })
     }
 
-    static async fetchHint(hintId: number): Promise<Hint> {
+    static async fetchHint(hintId: number, userId: string): Promise<Hint> {
         const answers = await AnswerService.fetchAnswers(hintId)
 
         if (answers == null) throw this.hintFetchError
+
+        const response = await ResponseService.fetchResponseFor(hintId, userId)
 
         const { data: hints, error: error } = await supabase
             .from('hint')
@@ -49,6 +51,7 @@ export class HintService {
 
         const hint = hints[0]
 
-        return new Hint(hint.id, hint.hunt_id, hint.question, hint.image_url, hint.order, hint.max_value, null, answers)
+        return new Hint(hint.id, hint.hunt_id, hint.question, hint.image_url, hint.order, hint.max_value, response?.score, answers, 
+            response?.answerText)
     }
 }
