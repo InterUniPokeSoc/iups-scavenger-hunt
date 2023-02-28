@@ -17,53 +17,58 @@
       <v-responsive v-else class="d-flex align-center text-center fill-height" id="main-responsive-container">
         <h1>Hunt {{ Number(huntId) + 1 }} Questions</h1>
 
-        <v-card>
-          <v-card-text>
-            <v-table class="elevation-1">
-              <thead>
-              <tr>
-                  <th class="text-center">
-                  Question Number
-                  </th>
-                  <th class="text-center">
-                  Score
-                  </th>
-                  <th class="text-center">
-                  Actions
-                  </th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr
-                  v-for="hint, index in hints"
-                  :key="index"
+        <v-table class="elevation-1">
+          <thead>
+          <tr>
+              <th class="text-center">
+              Question Number
+              </th>
+              <th class="text-center">
+              Score
+              </th>
+              <th class="text-center">
+              Actions
+              </th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr
+              v-for="hint, index in hints"
+              :key="index"
+          >
+            <td>{{ hint.id + 1 }}</td>
+            <td>
+              <v-row v-if="hint.userScore" class="justify-center align-center ma-1">
+                <v-chip class="ma-1" :color="ScoreUtility.scoreToColour(hint.userScore, hint.maxValue)">{{ hint.userScore }}</v-chip>
+                {{ `/ ${hint.maxValue}` }}
+              </v-row>
+              <v-row v-else-if="hints[index-1]?.userScore" class="justify-center align-center ma-1">
+                <v-chip class="ma-1" color="orange">In Progress</v-chip>
+              </v-row>
+            </td>
+            <td>
+              <v-btn 
+                @click="goToHint(hint.id)" 
+                :prepend-icon="hint.userScore ? 'mdi-check-circle' : index == 0 || hints[index-1]?.userScore ? 'mdi-pencil' : 'mdi-cancel'" 
+                :disabled="!hintAvailable(index)"
+                variant="outlined"
+                :color="hint.userScore ? 'teal' : index == 0 || hints[index-1]?.userScore ? 'deep-orange' : 'pink'"
               >
-                <td>{{ hint.id + 1 }}</td>
-                <td>
-                  <v-row v-if="hint.userScore" class="justify-center align-center ma-1">
-                    <v-chip class="ma-1" :color="ScoreUtility.scoreToColour(hint.userScore, hint.maxValue)">{{ hint.userScore }}</v-chip>
-                    {{ `/ ${hint.maxValue}` }}
-                  </v-row>
-                  <v-row v-else-if="hints[index-1]?.userScore" class="justify-center align-center ma-1">
-                    <v-chip class="ma-1" color="orange">In Progress</v-chip>
-                  </v-row>
-                </td>
-                <td>
-                  <v-btn 
-                    @click="goToHint(hint.id)" 
-                    :prepend-icon="hint.userScore ? 'mdi-check-circle' : index == 0 || hints[index-1]?.userScore ? 'mdi-pencil' : 'mdi-cancel'" 
-                    :disabled="!hintAvailable(index)"
-                    variant="outlined"
-                    :color="hint.userScore ? 'teal' : index == 0 || hints[index-1]?.userScore ? 'deep-orange' : 'pink'"
-                  >
-                    {{ hint.userScore ? 'Answered' : index == 0 || hints[index-1]?.userScore ? 'Start' : 'Unavailable' }}
-                  </v-btn>
-                </td>
-              </tr>
-              </tbody>
-            </v-table>
-          </v-card-text>
-        </v-card>
+                {{ hint.userScore ? 'Answered' : index == 0 || hints[index-1]?.userScore ? 'Start' : 'Unavailable' }}
+              </v-btn>
+            </td>
+          </tr>
+          </tbody>
+        </v-table>
+
+        <v-alert
+          v-if="huntIsComplete()"
+          type="success"
+          title="Hunt Completed"
+          text="You have successfully completed this hunt!"
+          variant="tonal"
+          class="ma-3"
+        ></v-alert>
 
       </v-responsive>
     </v-container>
@@ -77,8 +82,8 @@
   import { Hint } from '@/models/Hint'
   import store from '@/data/Store'
   import { Local, LocalProperty } from '@/data/Local'
-import { ResponseService } from '@/services/ResponseService'
-import { ScoreUtility } from '@/utilities/ScoreUtility'
+  import { ResponseService } from '@/services/ResponseService'
+  import { ScoreUtility } from '@/utilities/ScoreUtility'
 
   let router = useRouter()
 
@@ -125,5 +130,9 @@ import { ScoreUtility } from '@/utilities/ScoreUtility'
     Local.setProperty(LocalProperty.SELECTED_HINT, hintId)
 
     router.push('/hint')
+  }
+
+  const huntIsComplete = () => {
+    return hints?.value[hints.value.length-1]?.userScore != null
   }
 </script>
