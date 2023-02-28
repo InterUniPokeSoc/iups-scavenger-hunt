@@ -1,15 +1,17 @@
 <template>
   <v-app-bar :elevation="2">
+    <v-app-bar-nav-icon @click="() => drawer = !drawer" v-if="user"></v-app-bar-nav-icon>
+
     <v-app-bar-title>
       <v-img src="@/assets/images/iups-scavenger-hunt-logo-light.png" :width="200" />
     </v-app-bar-title>
 
-    <v-btn
+    <!-- <v-btn
       v-if="user"
       icon="mdi-home"
       color="primary"
       href="./dashboard"
-    ></v-btn>
+    ></v-btn> -->
 
     <template v-slot:append>
       <div class="text-center">
@@ -66,6 +68,21 @@
       </div>
     </template>
   </v-app-bar>
+
+  <v-navigation-drawer
+    v-model="drawer"
+    location="left"
+    temporary
+  >
+    <v-list>
+      <v-list-item href="./">
+        <template v-slot:prepend>
+          <v-icon icon="mdi-home"></v-icon>
+        </template>
+        <v-list-item-title>Dashboard</v-list-item-title>
+      </v-list-item>
+    </v-list>
+  </v-navigation-drawer>
 </template>
 
 <script lang="ts" setup>
@@ -78,13 +95,15 @@
   
   const user: any = ref(store.state.user)
 
+  const drawer = ref(false)
+
+  const menu = ref(false)
+
   watch(
     () => user.value = store.state.user, () => {
       store.state.user
     }
   )
-
-  const menu = ref(false)
 
   const signOut = () => {
     store.methods.destroySession()
