@@ -20,14 +20,22 @@
           v-if="user"
         >
           <template v-slot:activator="{ props }">
-            <v-avatar v-bind="props" v-if="user" color="red" style="cursor: pointer">{{ user.email[0].toUpperCase() }}</v-avatar>
+            <v-avatar 
+              v-bind="props" 
+              v-if="user" 
+              color="black" 
+              style="cursor: pointer"
+              :image="user?.user_metadata?.avatar_url"
+            >
+              {{ user?.user_metadata?.avatar_url ?? user?.user_metadata?.full_name?.toUpperCase()[0] ?? "" }}
+            </v-avatar>
           </template>
 
           <v-card min-width="300">
             <v-list>
               <v-list-item
-                prepend-avatar=""
-                :title="user.discord"
+                :prepend-avatar="user?.user_metadata?.avatar_url"
+                :title="user?.user_metadata?.full_name"
                 :subtitle="user.email"
               >
               </v-list-item>
