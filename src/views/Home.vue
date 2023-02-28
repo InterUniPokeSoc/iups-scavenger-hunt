@@ -6,14 +6,19 @@
             <v-card-item class="justify-center">
               <v-img src="@/assets/images/iups-scavenger-hunt-logo-light.png" width="400" class="ma-auto"/>
 
-              <p class="ma-3">Please log in with your Discord account to continue</p>
+              <div v-if="userId == null">
+                <p class="ma-3">Please log in with your Discord account to continue</p>
 
-              <p class="ma-3">You can remove permissions for this app through your Discord settings</p>
+                <p class="ma-3">You can remove permissions for this app through your Discord settings</p>
 
-              <v-switch label="I agree to have my Email, Discord Id and Profile Image stored and processed by I-UPS using Supabase" color="indigo" inset v-model="gdprAgreement"></v-switch>
+                <v-switch label="I agree to have my Email, Discord Id and Profile Image stored and processed by I-UPS using Supabase" color="indigo" inset v-model="gdprAgreement"></v-switch>
+              </div>
             </v-card-item>
-            <v-card-actions class="justify-center">
+            <v-card-actions v-if="userId == null" class="justify-center">
               <v-btn @click="handleLogin" variant="tonal" color=#7289da :disabled="!gdprAgreement">Log in with Discord</v-btn>
+            </v-card-actions>
+            <v-card-actions v-else class="justify-center">
+              <v-btn href="./" variant="tonal" color=#7289da>Continue to Dashboard</v-btn>
             </v-card-actions>
           </v-card>
 
@@ -28,12 +33,16 @@
   import { supabase } from '@/services/Supabase'
   import { useRouter } from 'vue-router'
 
+  import store from '@/data/Store'
+
   const router = useRouter()
 
   const loading = ref(false)
   const errorMessage = ref("")
 
   const gdprAgreement = ref(false)
+
+  const userId = ref(store.state.user?.id)
 
   const handleLogin = async () => {
     try {

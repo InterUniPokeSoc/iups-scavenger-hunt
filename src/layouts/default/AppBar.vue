@@ -17,6 +17,7 @@
           v-model="menu"
           :close-on-content-click="false"
           location="end"
+          v-if="user"
         >
           <template v-slot:activator="{ props }">
             <v-avatar v-bind="props" v-if="user" color="red" style="cursor: pointer">{{ user.email[0].toUpperCase() }}</v-avatar>
@@ -67,20 +68,22 @@
 
   const router = useRouter()
   
-  const user: any = ref(null)
+  const user: any = ref(store.state.user)
 
   watch(
-    () => user.value = store.state.user,
-    store.state.user
+    () => user.value = store.state.user, () => {
+      store.state.user
+    }
   )
 
   const menu = ref(false)
 
   const signOut = () => {
-    menu.value = false
     store.methods.destroySession()
     supabase.auth.signOut()
 
     router.push('/')
+
+    menu.value = false
   }
 </script>
