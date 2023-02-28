@@ -67,7 +67,7 @@
                   </tbody>
                 </v-table>
 
-                <v-pagination :length="1" class="ma-2"></v-pagination>
+                <v-pagination v-model="page" :length="(hunts.length / 5) + 1" class="ma-2"></v-pagination>
               </v-card-text>
             </v-card>
 
@@ -94,14 +94,14 @@
   </template>
   
   <script lang="ts" setup>
-    import { ref, onMounted } from 'vue'
+    import { ref, onMounted, watch } from 'vue'
     import { useRouter } from 'vue-router'
     import { HuntService } from '@/services/HuntService'
     import { Hunt } from '@/models/Hunt'
     import store from '@/data/Store'
     import { Local, LocalProperty } from '@/data/Local'
     import { ParticipationService } from '@/services/ParticipationService'
-import { ScoreUtility } from '@/utilities/ScoreUtility'
+    import { ScoreUtility } from '@/utilities/ScoreUtility'
 
     let router = useRouter()
 
@@ -115,16 +115,22 @@ import { ScoreUtility } from '@/utilities/ScoreUtility'
     let hunts = ref(new Array<Hunt>())
     let userId = ref(store.state.user.id)
 
+    let page = ref(1)
+
     onMounted(async () => {
       if (!userId?.value) error.value = true
 
       await getHunts()
     })
 
+    watch(page, 
+      async () => { await getHunts() }
+    )
+
     const getHunts = async () => {
       loading.value = true
 
-      await HuntService.fetchHunts(userId.value).then((result) => {
+      await HuntService.fetchHunts(userId.value, page.value - 1).then((result) => {
         hunts.value = result
 
         loading.value = false

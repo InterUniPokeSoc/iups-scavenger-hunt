@@ -7,7 +7,11 @@ import { ScoreUtility } from '@/utilities/ScoreUtility'
 export class HuntService {
     static readonly huntFetchError = new Error("No Hunts Found")
 
-    static async fetchHunts(userId: string): Promise<Hunt[]> {
+    static async fetchHunts(userId: string, page: number): Promise<Hunt[]> {
+        const numberPerPage = 5
+        const startItem = page * numberPerPage
+        const endItem = ((page + 1) * numberPerPage) - 1
+
         const participations = await ParticipationService.fetchParticipatingHuntIdsFor(userId)
 
         const currentDate = new Date().toISOString()
@@ -18,6 +22,7 @@ export class HuntService {
             .select('*')
             .eq('hidden', false)
             .or(`id.in.(${participations}), end_date.gte.${currentDate}`)
+            .range(startItem, endItem)
 
         if (!hunts || error) throw this.huntFetchError
 
