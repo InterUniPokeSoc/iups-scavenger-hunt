@@ -18,6 +18,9 @@
                       Hunt Number
                       </th>
                       <th class="text-center">
+                      Start Date
+                      </th>
+                      <th class="text-center">
                       End Date
                       </th>
                       <th class="text-center">
@@ -36,7 +39,8 @@
                       v-for="hunt, index in hunts"
                       :key="index"
                   >
-                    <td>{{ index + 1 }}</td>
+                    <td>{{ hunt.id + 1 }}</td>
+                    <td>{{ hunt.startDate }}</td>
                     <td>{{ hunt.endDate }}</td>
                     <td>
                     <v-row v-if="hunt.hasParticipation" class="justify-center align-center ma-1">
