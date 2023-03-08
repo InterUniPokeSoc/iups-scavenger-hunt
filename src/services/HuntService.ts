@@ -17,12 +17,16 @@ export class HuntService {
         const currentDate = new Date().toISOString()
 
         // Show open hunts or those that the user has participated in.
-        const { data: hunts, error: error } = await supabase
+        let query = supabase
             .from('hunt')
             .select('*')
-            .eq('hidden', false)
             .or(`id.in.(${participations}), and(start_date.lte.${currentDate}, end_date.gte.${currentDate})`)
             .range(startItem, endItem)
+            .order('start_date', { ascending: false })
+
+        if (import.meta.env.VITE_SHOW_HIDDEN == null) { query = query.eq('hidden', false) }
+
+        const { data: hunts, error: error } = await query
 
         if (!hunts || error) throw this.huntFetchError
 
