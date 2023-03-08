@@ -15,9 +15,11 @@
       </v-responsive>
 
       <v-responsive v-else class="d-flex align-center text-center fill-height" id="main-responsive-container">
-        <h1>Hunt {{ Number(huntId) + 1 }} Questions</h1>
+        <v-breadcrumbs :items="breadcrumbs"></v-breadcrumbs>
 
-        <v-table class="elevation-1">
+        <h1 class="ma-2">Hunt {{ Number(huntId) + 1 }} Questions</h1>
+
+        <v-table class="elevation-1 ma-2">
           <thead>
           <tr>
               <th class="text-center">
@@ -67,7 +69,7 @@
           title="Hunt Completed"
           text="You have successfully completed this hunt!"
           variant="tonal"
-          class="ma-3"
+          class="ma-2"
         ></v-alert>
 
       </v-responsive>
@@ -95,6 +97,18 @@
   let error = ref(false)
 
   let hints = ref(new Array<Hint>())
+
+  let breadcrumbs = ref([
+    {
+      title: 'Dashboard',
+      disabled: false,
+      href: './',
+    },
+    {
+      title: `Hunt ${Number(huntId.value) + 1}`,
+      disabled: true,
+    },
+  ])
 
   onMounted(async () => {
     loading.value = true

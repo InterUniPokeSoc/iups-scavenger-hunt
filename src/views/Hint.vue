@@ -15,6 +15,8 @@
         </v-responsive>
 
         <v-responsive v-else-if="hint" class="d-flex align-center text-center fill-height" id="main-responsive-container">
+          <v-breadcrumbs :items="breadcrumbs"></v-breadcrumbs>
+
           <v-card variant="outlined">
             <v-card-text>
               <h1>Hint {{ (hint.id + 1) }}</h1>
@@ -118,6 +120,7 @@
   import { ScoreUtility } from '@/utilities/ScoreUtility'
 
   let hintId = ref(Local.getProperty(LocalProperty.SELECTED_HINT))
+  let huntId = ref(Local.getProperty(LocalProperty.SELECTED_HUNT))
 
   let userId = ref(store.state.user.id)
 
@@ -130,6 +133,23 @@
   let checking = ref(false)
 
   let hint: Ref<Hint | null> = ref(null)
+
+  let breadcrumbs = ref([
+    {
+      title: 'Dashboard',
+      disabled: false,
+      href: './',
+    },
+    {
+      title: `Hunt ${Number(huntId.value) + 1}`,
+      disabled: false,
+      href: './hunt',
+    },
+    {
+      title: `Hint ${Number(hintId.value) + 1}`,
+      disabled: true,
+    },
+  ])
 
   onMounted(async () => {
     loading.value = true
