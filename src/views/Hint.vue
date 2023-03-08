@@ -59,6 +59,36 @@
                 <v-chip class="ma-1" :color="ScoreUtility.scoreToColour(hint.userScore, hint.maxValue)">{{ hint.userScore }}</v-chip>
                 {{ `/ ${hint.maxValue}` }}
               </v-col>
+
+              <v-expansion-panels v-if="hint.userScore" variant="popout">
+                <v-expansion-panel
+                  title="Answers"
+                >
+                  <v-expansion-panel-text>
+                    <v-table>
+                      <thead>
+                      <tr>
+                        <th class="text-center">
+                        Answer
+                        </th>
+                        <th class="text-center">
+                        Points
+                        </th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                        <tr
+                            v-for="answerOption, index in hint.answers"
+                            :key="index"
+                        >
+                          <td>{{ answerOption.answer }}</td>
+                          <td>{{ Math.floor((Number(answerOption.percentageValue) / 100) * hint.maxValue) }}</td>
+                        </tr>
+                      </tbody>
+                    </v-table>
+                  </v-expansion-panel-text>
+                </v-expansion-panel>
+              </v-expansion-panels>
             </v-card-text>
 
             <v-card-actions>
@@ -85,7 +115,7 @@
 
   import { Local, LocalProperty } from '@/data/Local'
   import router from '@/router'
-import { ScoreUtility } from '@/utilities/ScoreUtility'
+  import { ScoreUtility } from '@/utilities/ScoreUtility'
 
   let hintId = ref(Local.getProperty(LocalProperty.SELECTED_HINT))
 
