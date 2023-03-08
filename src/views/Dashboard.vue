@@ -6,74 +6,66 @@
           </v-responsive>
 
           <v-responsive v-else class="d-flex align-center text-center fill-height" id="main-responsive-container">
-            <h1>Hunt Dashboard</h1>
-            <v-card>
-              <v-card-text>
-                <v-table 
-                  class="elevation-1"
+            <v-row no-gutters class="justify-center align-center">
+              <v-icon icon="mdi-treasure-chest" size="x-large" class="ma-1"></v-icon>
+              <h1 class="ma-1">Dashboard</h1>
+            </v-row>
+            <v-container class="bg-surface">
+              <v-row no-gutters class="justify-center">
+                <v-col
+                  v-for="hunt, index in hunts"
+                  :key="index"
+                  cols="12"
+                  sm="6"
                 >
-                  <thead>
-                  <tr>
-                      <th class="text-center">
-                      Hunt Number
-                      </th>
-                      <th class="text-center">
-                      Start Date
-                      </th>
-                      <th class="text-center">
-                      End Date
-                      </th>
-                      <th class="text-center">
-                      Score
-                      </th>
-                      <th class="text-center">
-                      Tier
-                      </th>
-                      <th class="text-center">
-                      Actions
-                      </th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  <tr
-                      v-for="hunt, index in hunts"
-                      :key="index"
-                  >
-                    <td>{{ hunt.id + 1 }}</td>
-                    <td>{{ hunt.startDate }}</td>
-                    <td>{{ hunt.endDate }}</td>
-                    <td>
-                    <v-row v-if="hunt.hasParticipation" class="justify-center align-center ma-1">
-                      <v-chip :color="ScoreUtility.scoreToColour(hunt.score, hunt.maxScore)">
+                <v-card 
+                  class="justify-center align-center ma-3"
+                  variant="outlined"
+
+                  :title="'Hunt ' + (hunt.id + 1)"
+                  :subtitle="`${hunt.startDate} - ${hunt.endDate}`"
+                >
+                  <v-card-text class="justify-center align-center">
+                    <v-row v-if="hunt.hasParticipation" class="justify-center align-center ma-3">
+                      <v-chip :color="ScoreUtility.scoreToColour(hunt.score, hunt.maxScore)" size="large">
                         {{ hunt.score }}
                       </v-chip>
                       <p class="ma-1">{{ `/ ${hunt.maxScore}` }}</p>
                     </v-row>
-                    </td>
-                    <td>
-                    <v-row class="justify-center align-center ma-1">
-                      <v-chip v-if="hunt.hasParticipation && hunt.tier" :color="ScoreUtility.tierToColor(hunt.tier)">
-                        {{ hunt.tier }}
+
+                    <v-row v-else class="justify-center align-center ma-3">
+                      <v-chip color="deep-orange" size="large">
+                        {{ "Not Attempted" }}
                       </v-chip>
                     </v-row>
-                    </td>
-                    <td>
-                      <v-btn 
-                        @click="hunt.hasParticipation ? goToHunt(hunt) : joinHunt(hunt)" 
-                        :prepend-icon="hunt.hasParticipation ? 'mdi-magnify' : 'mdi-plus'"
-                        :color="hunt.hasParticipation ? 'black' : 'deep-orange'"
-                        variant="outlined"
-                      >
-                        {{ hunt.hasParticipation ? 'View' : 'Join' }}
-                      </v-btn>
-                    </td>
-                  </tr>
-                  </tbody>
-                </v-table>
 
-                <v-pagination v-model="page" :length="(hunts.length / 5) + 1" class="ma-2"></v-pagination>
-              </v-card-text>
-            </v-card>
+                    <v-divider></v-divider>
+
+                    <v-row class="justify-center align-center ma-2">
+                      <v-chip v-if="hunt.hasParticipation && hunt.tier" :color="ScoreUtility.tierToColor(hunt.tier)">
+                          {{ hunt.tier }}
+                      </v-chip>
+
+                      <p class="ma-2">{{ hunt.hasParticipation && hunt.tier ? 'Tier' : 'Available to Join' }}</p>
+                    </v-row>
+                  </v-card-text>
+
+                  <v-card-actions class="justify-center">
+                    <v-btn 
+                      @click="hunt.hasParticipation ? goToHunt(hunt) : joinHunt(hunt)" 
+                      :prepend-icon="hunt.hasParticipation ? 'mdi-magnify' : 'mdi-plus'"
+                      :color="hunt.hasParticipation ? 'black' : 'deep-orange'"
+                      variant="outlined"
+                    >
+                      {{ hunt.hasParticipation ? 'View' : 'Join' }}
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+                </v-col>
+              </v-row>
+            </v-container>
+
+            <v-pagination v-model="page" :length="(hunts.length / 5) + 1" class="ma-2"></v-pagination>
 
             <v-snackbar
               v-model="joinSnackbar"
