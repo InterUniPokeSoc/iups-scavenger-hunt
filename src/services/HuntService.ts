@@ -21,7 +21,7 @@ export class HuntService {
             .from('hunt')
             .select('*')
             .eq('hidden', false)
-            .or(`id.in.(${participations}), end_date.gte.${currentDate}`)
+            .or(`id.in.(${participations}), and(start_date.lte.${currentDate}, end_date.gte.${currentDate})`)
             .range(startItem, endItem)
 
         if (!hunts || error) throw this.huntFetchError
