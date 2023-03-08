@@ -3,7 +3,9 @@
     <v-app-bar-nav-icon @click="() => drawer = !drawer" v-if="user"></v-app-bar-nav-icon>
 
     <v-app-bar-title>
-      <v-img src="@/assets/images/iups-scavenger-hunt-logo-light.png" :width="200" />
+      <a href="./">
+        <v-img src="@/assets/images/iups-scavenger-hunt-logo-light.png" :width="200" />
+      </a>
     </v-app-bar-title>
 
     <!-- <v-btn
