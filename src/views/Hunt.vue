@@ -38,7 +38,7 @@
               v-for="hint, index in hints"
               :key="index"
           >
-            <td>{{ hint.id + 1 }}</td>
+            <td>{{ hint.order + 1 }}</td>
             <td>
               <v-row v-if="hint.userScore" class="justify-center align-center ma-1">
                 <v-chip class="ma-1" :color="ScoreUtility.scoreToColour(hint.userScore, hint.maxValue)">{{ hint.userScore }}</v-chip>

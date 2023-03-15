@@ -19,7 +19,7 @@
 
           <v-card variant="outlined">
             <v-card-text>
-              <h1>Hint {{ (hint.id + 1) }}</h1>
+              <h1>Hint {{ (hint.order + 1) }}</h1>
               <p class="ma-3">{{ (hint.question) }}</p>
               <v-img v-if="hint.imageUrl" :src="hint.imageUrl" height="200"></v-img>
 
@@ -146,7 +146,7 @@
       href: './hunt',
     },
     {
-      title: `Hint ${Number(hintId.value) + 1}`,
+      title: `Hint ${Number(hint.value?.order ?? hintId.value) + 1}`,
       disabled: true,
     },
   ])
@@ -200,8 +200,9 @@
   }
 
   const uploadAnswer = async () => {
+
     let filteredAnswer = hint.value?.answers?.filter((hintAnswer: Answer) => {
-      if (answer.value?.toLowerCase().trim() == hintAnswer.answer) { 
+      if (answer.value?.toLowerCase() == hintAnswer.answer.toLowerCase()) { 
         return hintAnswer
       }
     })[0]
