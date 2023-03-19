@@ -83,6 +83,13 @@
         </template>
         <v-list-item-title>Dashboard</v-list-item-title>
       </v-list-item>
+
+      <v-list-item href="./help">
+        <template v-slot:prepend>
+          <v-icon icon="mdi-help-rhombus"></v-icon>
+        </template>
+        <v-list-item-title>Help</v-list-item-title>
+      </v-list-item>
     </v-list>
   </v-navigation-drawer>
 </template>

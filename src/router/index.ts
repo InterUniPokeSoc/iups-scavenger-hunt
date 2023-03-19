@@ -28,6 +28,14 @@ const routes = [
         }
       },
       {
+        path: 'help',
+        name: 'Help',
+        component: () => import(/* webpackChunkName: "help" */ '@/views/Help.vue'),
+        meta : {
+          authenticationRequired: true,
+        }
+      },
+      {
         path: 'hunt',
         name: 'Hunt',
         component: () => import(/* webpackChunkName: "hunt" */ '@/views/Hunt.vue'),
