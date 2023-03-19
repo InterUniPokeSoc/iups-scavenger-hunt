@@ -27,6 +27,7 @@ export class ScoreUtility {
     static async scoreToTier(userScore: number, huntId: number): Promise<string> {
         console.log("userScore: "+userScore)
         if (userScore == 0) return 'F'
+        if (userScore == 100) return 'S'
 
         let scores = await ResponseService.fetchAllScoresFor(huntId)
 
@@ -41,15 +42,15 @@ export class ScoreUtility {
         let percentage = this.getPercentage(indexOfUserScore+1, orderedScores.length)
 
         if (percentage >= 100) {
-            return 'S'
-        } else if (percentage >= 90) {
             return 'A'
         } else if (percentage >= 70) {
             return 'B'
         } else if (percentage >= 50) {
             return 'C'
-        } else if (percentage >= 20) {
+        } else if (percentage >= 40) {
             return 'D'
+        } else if (percentage >= 30) {
+            return 'E'
         } else {
             return 'F'
         }
@@ -59,6 +60,9 @@ export class ScoreUtility {
         switch(tier) {
             case 'S': { 
                 return 'teal'
+            }
+            case 'A+': { 
+                return 'cyan'
             }
             case 'A': { 
                 return 'cyan'

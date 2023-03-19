@@ -80,7 +80,7 @@
 <script lang="ts" setup>
   import { ref, onMounted } from 'vue'
   import { useRouter } from 'vue-router'
-  import {HintService } from '@/services/HintService'
+  import { HintService } from '@/services/HintService'
   import { Hint } from '@/models/Hint'
   import store from '@/data/Store'
   import { Local, LocalProperty } from '@/data/Local'

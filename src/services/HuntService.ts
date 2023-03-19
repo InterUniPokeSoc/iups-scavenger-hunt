@@ -36,7 +36,7 @@ export class HuntService {
         const scores = await ResponseService.fetchScoresFor(huntIds, userId)
 
         let huntValues = hunts.map(async (hunt) => {
-            const huntScores = scores.filter((score) => { 
+            const huntScores = scores.filter((score) => {
                 if (score.huntId == hunt.id) return score
             })
 
@@ -44,11 +44,10 @@ export class HuntService {
 
             if (huntScores) {
                 const score = huntScores.reduce((sum, huntScoreData) => sum += huntScoreData.score, 0)
-                const maxScore = huntScores.reduce((sum, huntScoreData) => sum += huntScoreData.maxScore, 0)
 
                 let tier = await ScoreUtility.scoreToTier(score, hunt.id)
 
-                return new Hunt(hunt.id, hunt.start_date, hunt.end_date, hunt.hidden, score, maxScore, hasParticipation, tier)
+                return new Hunt(hunt.id, hunt.start_date, hunt.end_date, hunt.hidden, score, hunt.max_score, hasParticipation, tier)
             }
 
             return new Hunt(hunt.id, hunt.start_date, hunt.end_date, hunt.hidden, 0, 0, hasParticipation)

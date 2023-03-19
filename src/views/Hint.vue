@@ -146,7 +146,7 @@
       href: './hunt',
     },
     {
-      title: `Hint ${Number(hint.value?.order ?? hintId.value) + 1}`,
+      title: `View Hint`,
       disabled: true,
     },
   ])
