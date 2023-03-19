@@ -12,7 +12,15 @@
             </v-row>
             <v-container class="bg-surface">
               <v-row no-gutters class="justify-center">
+                <v-alert
+                  v-if="hunts == null || Object.keys(hunts).length < 1"
+                  type="info"
+                  title="There are no Hunts Available"
+                  variant="tonal"
+                ></v-alert>
+
                 <v-col
+                  v-else
                   v-for="hunt, index in hunts"
                   :key="index"
                   cols="12"
