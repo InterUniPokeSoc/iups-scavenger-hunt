@@ -1,4 +1,5 @@
 import { ResponseService } from "@/services/ResponseService"
+import { Hunt } from '@/models/Hunt'
 
 export class ScoreUtility {
 
@@ -24,12 +25,12 @@ export class ScoreUtility {
         }
     }
 
-    static async scoreToTier(userScore: number, huntId: number): Promise<string> {
+    static async scoreToTier(userScore: number, hunt: Hunt): Promise<string> {
         console.log("userScore: "+userScore)
         if (userScore == 0) return 'F'
-        if (userScore == 100) return 'S'
+        if (userScore == hunt.maxScore) return 'S'
 
-        let scores = await ResponseService.fetchAllScoresFor(huntId)
+        let scores = await ResponseService.fetchAllScoresFor(hunt.id)
 
         if (scores == null) throw this.scoreError
 
