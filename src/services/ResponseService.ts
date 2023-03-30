@@ -30,7 +30,6 @@ export class ResponseService {
             .from('response')
             .select('participation!inner(user_id), answer!inner(percentage_value, hint!inner(max_value, hunt!inner(id)))')
             .eq('participation.user_id', userId)
-            .eq('participation.excluded', false)
             .in('answer.hint.hunt.id', huntIds)
 
         if (results == null) return []
@@ -75,11 +74,16 @@ export class ResponseService {
         if (error) throw this.responseWriteError
     }
 
-    static async fetchAllScoresFor(huntId: number): Promise<number[]> {
-        const { data: results, error: error } = await supabase
+    static async fetchAllScoresFor(huntId: number, excludedScores: Boolean): Promise<number[]> {
+
+        let query = supabase
             .from('response')
-            .select('participation!inner(user_id), answer!inner(percentage_value, hint!inner(max_value, hunt!inner(id)))')
+            .select('participation!inner(user_id, excluded), answer!inner(percentage_value, hint!inner(max_value, hunt!inner(id)))')
             .eq('answer.hint.hunt.id', huntId)
+
+        if (excludedScores) { query = query.eq('participation.excluded', false) }
+
+        const { data: results, error: error } = await query
 
         if (error) throw this.responseFetchError
 

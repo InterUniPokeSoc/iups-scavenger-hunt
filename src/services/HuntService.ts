@@ -15,7 +15,7 @@ export class HuntService {
 
         const participations = await ParticipationService.fetchParticipationsFor(userId)
 
-        const participationHuntIds = participations.map((participation: Participation) => { participation.huntId })
+        const participationHuntIds = participations.map((participation: Participation) => { return participation.huntId })
 
         const currentDate = new Date().toISOString()
 
@@ -23,14 +23,18 @@ export class HuntService {
         let query = supabase
             .from('hunt')
             .select('*')
-            .or(`id.in.(${participationHuntIds}), and(start_date.lte.${currentDate}, end_date.gte.${currentDate})`)
+
+        if (import.meta.env.VITE_SHOW_HIDDEN == null) { 
+            query = query
+                .or(`id.in.(${participationHuntIds}), and(start_date.lte.${currentDate}, end_date.gte.${currentDate})`)
+                .eq('hidden', false)
+        }
+
+        query = query
             .range(startItem, endItem)
             .order('start_date', { ascending: false })
 
-        if (import.meta.env.VITE_SHOW_HIDDEN == null) { query = query.eq('hidden', false) }
-
         const { data: hunts, error: error } = await query
-
         if (!hunts || error) throw this.huntFetchError
 
         const huntIds = hunts.flatMap((hunt) => { return hunt.id })
@@ -43,9 +47,11 @@ export class HuntService {
                 if (score.huntId == hunt.id) return score
             })
 
-            const participation = participations.filter((participation) => { 
+            let participationList: Participation[] | null = participations.filter((participation) => { 
                 if(participation.huntId == hunt.id) return participation
-            })[0]
+            })
+
+            let participation: Participation | null = participationList.length == 1 ? participationList[0] : null
 
             if (huntScores) {
                 const score = huntScores.reduce((sum, huntScoreData) => sum += huntScoreData.score, 0)

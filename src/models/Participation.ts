@@ -1,7 +1,7 @@
 export class Participation {
     id: number
     huntId: number
-    excluded: Boolean
+    excluded: Boolean | null
 
     constructor(id: number,
         huntId: number,

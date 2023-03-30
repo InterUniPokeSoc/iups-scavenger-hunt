@@ -26,12 +26,11 @@ export class ScoreUtility {
     }
 
     static async scoreToTier(userScore: number, hunt: Hunt): Promise<string> {
-        console.log("userScore: "+userScore)
         if (userScore == 0) return 'F'
         if (userScore == hunt.maxScore) return 'S'
 
-        let scores = await ResponseService.fetchAllScoresFor(hunt.id)
-
+        let scores = await ResponseService.fetchAllScoresFor(hunt.id, true)
+        
         if (scores == null) throw this.scoreError
 
         let orderedScores = [...new Set(scores)].sort((a,b) => a-b)

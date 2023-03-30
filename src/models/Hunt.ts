@@ -7,7 +7,7 @@ export class Hunt {
     hidden: boolean
     score: number
     maxScore: number
-    participation: Participation
+    participation: Participation | null
     tier: string | null
 
     constructor(id: number,
@@ -16,7 +16,7 @@ export class Hunt {
         hidden: boolean,
         score: number,
         maxScore: number,
-        participation: Participation,
+        participation: Participation | null,
         tier: string | null = null) {
 
         this.id = id

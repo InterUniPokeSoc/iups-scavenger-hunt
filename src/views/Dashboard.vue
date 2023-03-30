@@ -54,7 +54,9 @@
                           {{ hunt.tier }}
                       </v-chip>
 
-                      <p class="ma-2">{{ hunt.participation && hunt.tier ? 'Tier' : 'Available to Join' }}</p>
+                      <p v-if="hunt.participation && hunt.tier" class="ma-2">Tier</p>
+                      <p v-else-if="hunt.participation && !hunt.tier" class="ma-2">Excluded</p>
+                      <p v-else class="ma-2">Available to Join</p>
                     </v-row>
                   </v-card-text>
 
