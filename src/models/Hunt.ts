@@ -1,3 +1,5 @@
+import { Participation } from '@/models/Participation'
+
 export class Hunt {
     id: number
     startDate: Date
@@ -5,7 +7,7 @@ export class Hunt {
     hidden: boolean
     score: number
     maxScore: number
-    hasParticipation: boolean
+    participation: Participation
     tier: string | null
 
     constructor(id: number,
@@ -14,7 +16,7 @@ export class Hunt {
         hidden: boolean,
         score: number,
         maxScore: number,
-        hasParticipation: boolean,
+        participation: Participation,
         tier: string | null = null) {
 
         this.id = id
@@ -23,7 +25,7 @@ export class Hunt {
         this.hidden = hidden
         this.score = score
         this.maxScore = maxScore
-        this.hasParticipation = hasParticipation
+        this.participation = participation
         this.tier = tier
     }
 }

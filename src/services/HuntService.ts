@@ -2,6 +2,7 @@ import { supabase } from '@/services/Supabase'
 import { ParticipationService } from '@/services/ParticipationService'
 import { ResponseService } from '@/services/ResponseService'
 import { Hunt } from '@/models/Hunt'
+import { Participation } from '@/models/Participation'
 import { ScoreUtility } from '@/utilities/ScoreUtility'
 
 export class HuntService {
@@ -12,7 +13,9 @@ export class HuntService {
         const startItem = page * numberPerPage
         const endItem = ((page + 1) * numberPerPage) - 1
 
-        const participations = await ParticipationService.fetchParticipatingHuntIdsFor(userId)
+        const participations = await ParticipationService.fetchParticipationsFor(userId)
+
+        const participationHuntIds = participations.map((participation: Participation) => { participation.huntId })
 
         const currentDate = new Date().toISOString()
 
@@ -20,7 +23,7 @@ export class HuntService {
         let query = supabase
             .from('hunt')
             .select('*')
-            .or(`id.in.(${participations}), and(start_date.lte.${currentDate}, end_date.gte.${currentDate})`)
+            .or(`id.in.(${participationHuntIds}), and(start_date.lte.${currentDate}, end_date.gte.${currentDate})`)
             .range(startItem, endItem)
             .order('start_date', { ascending: false })
 
@@ -40,17 +43,19 @@ export class HuntService {
                 if (score.huntId == hunt.id) return score
             })
 
-            const hasParticipation = participations.includes(hunt.id)
+            const participation = participations.filter((participation) => { 
+                if(participation.huntId == hunt.id) return participation
+            })[0]
 
             if (huntScores) {
                 const score = huntScores.reduce((sum, huntScoreData) => sum += huntScoreData.score, 0)
 
-                let tier = await ScoreUtility.scoreToTier(score, hunt)
+                let tier = !participation?.excluded ? await ScoreUtility.scoreToTier(score, hunt) : null
 
-                return new Hunt(hunt.id, hunt.start_date, hunt.end_date, hunt.hidden, score, hunt.max_score, hasParticipation, tier)
+                return new Hunt(hunt.id, hunt.start_date, hunt.end_date, hunt.hidden, score, hunt.max_score, participation, tier)
             }
 
-            return new Hunt(hunt.id, hunt.start_date, hunt.end_date, hunt.hidden, 0, 0, hasParticipation)
+            return new Hunt(hunt.id, hunt.start_date, hunt.end_date, hunt.hidden, 0, 0, participation)
         })
 
         return Promise.all(huntValues)

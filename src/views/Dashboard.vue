@@ -34,7 +34,7 @@
                   :subtitle="`${hunt.startDate} - ${hunt.endDate}`"
                 >
                   <v-card-text class="justify-center align-center">
-                    <v-row v-if="hunt.hasParticipation" class="justify-center align-center ma-3">
+                    <v-row v-if="hunt.participation" class="justify-center align-center ma-3">
                       <v-chip :color="ScoreUtility.scoreToColour(hunt.score, hunt.maxScore)" size="large">
                         {{ hunt.score }}
                       </v-chip>
@@ -50,22 +50,22 @@
                     <v-divider></v-divider>
 
                     <v-row class="justify-center align-center ma-2">
-                      <v-chip v-if="hunt.hasParticipation && hunt.tier" :color="ScoreUtility.tierToColor(hunt.tier)">
+                      <v-chip v-if="hunt.participation && hunt.tier" :color="ScoreUtility.tierToColor(hunt.tier)">
                           {{ hunt.tier }}
                       </v-chip>
 
-                      <p class="ma-2">{{ hunt.hasParticipation && hunt.tier ? 'Tier' : 'Available to Join' }}</p>
+                      <p class="ma-2">{{ hunt.participation && hunt.tier ? 'Tier' : 'Available to Join' }}</p>
                     </v-row>
                   </v-card-text>
 
                   <v-card-actions class="justify-center">
                     <v-btn 
-                      @click="hunt.hasParticipation ? goToHunt(hunt) : joinHunt(hunt)" 
-                      :prepend-icon="hunt.hasParticipation ? 'mdi-magnify' : 'mdi-plus'"
-                      :color="hunt.hasParticipation ? 'black' : 'deep-orange'"
+                      @click="hunt.participation ? goToHunt(hunt) : joinHunt(hunt)" 
+                      :prepend-icon="hunt.participation ? 'mdi-magnify' : 'mdi-plus'"
+                      :color="hunt.participation ? 'black' : 'deep-orange'"
                       variant="outlined"
                     >
-                      {{ hunt.hasParticipation ? 'View' : 'Join' }}
+                      {{ hunt.participation ? 'View' : 'Join' }}
                     </v-btn>
                   </v-card-actions>
                 </v-card>
@@ -149,7 +149,7 @@
     }
 
     const joinHunt = async (hunt: Hunt) => {
-      if (hunt.hasParticipation) return
+      if (hunt.participation) return
 
       loading.value = true
       
@@ -165,7 +165,7 @@
     }
 
     const goToHunt = (hunt: Hunt) => {
-      if (!hunt.hasParticipation) return
+      if (!hunt.participation) return
 
       Local.setProperty(LocalProperty.SELECTED_HUNT, hunt.id)
 

@@ -30,6 +30,7 @@ export class ResponseService {
             .from('response')
             .select('participation!inner(user_id), answer!inner(percentage_value, hint!inner(max_value, hunt!inner(id)))')
             .eq('participation.user_id', userId)
+            .eq('participation.excluded', false)
             .in('answer.hint.hunt.id', huntIds)
 
         if (results == null) return []

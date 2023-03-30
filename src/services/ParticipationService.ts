@@ -30,22 +30,36 @@ export class ParticipationService {
         if (participations == null) return []
 
         return participations.map((participation) => {
-            return new Participation(participation.id, participation.hunt_id)
+            return new Participation(participation.id, participation.hunt_id, participation.excluded)
         })
     }
 
-    static async fetchParticipatingHuntIdsFor(userId: string): Promise<number[]> {
-        const { data: participations, error: error } = await supabase
-            .from('participation')
-            .select('hunt_id')
-            .eq('user_id', userId)
+    // static async fetchParticipatingHuntIdsFor(userId: string): Promise<number[]> {
+    //     const { data: participations, error: error } = await supabase
+    //         .from('participation')
+    //         .select('hunt_id')
+    //         .eq('user_id', userId)
 
-        if (participations == null) return []
+    //     if (participations == null) return []
 
-        return participations.map((participation) => {
-            return participation.hunt_id
-        })
-    }
+    //     return participations.map((participation) => {
+    //         return participation.hunt_id
+    //     })
+    // }
+
+    // static async fetchExcludedScoreHuntIdsFor(userId: string): Promise<number[]> {
+    //     const { data: participations, error: error } = await supabase
+    //         .from('participation')
+    //         .select('hunt_id')
+    //         .eq('user_id', userId)
+    //         .eq('excluded', true)
+
+    //     if (participations == null) return []
+
+    //     return participations.map((participation) => {
+    //         return participation.hunt_id
+    //     })
+    // }
 
     static async addParticipationFor(huntId: number, userId: string) {
         const { data: result, error: error } = await supabase
