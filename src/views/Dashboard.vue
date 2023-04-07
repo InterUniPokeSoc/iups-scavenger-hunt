@@ -31,7 +31,7 @@
                   variant="outlined"
 
                   :title="'Hunt ' + (hunt.id + 1)"
-                  :subtitle="`${hunt.startDate} - ${hunt.endDate}`"
+                  :subtitle="`${new Date(hunt.startDate).toLocaleDateString('en-GB')} - ${new Date(hunt.endDate).toLocaleDateString('en-GB')}`"
                 >
                   <v-card-text class="justify-center align-center">
                     <v-row v-if="hunt.participation" class="justify-center align-center ma-3">

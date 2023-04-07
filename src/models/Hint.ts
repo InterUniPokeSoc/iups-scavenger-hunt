@@ -10,6 +10,7 @@ export class Hint {
     userScore: number | null
     answers: Answer[] | null
     userAnswer: string | null
+    expired: boolean
 
     constructor(id: number,
         huntId: number,
@@ -19,7 +20,8 @@ export class Hint {
         maxValue: number,
         userScore: number | null = null,
         answers: Answer[] | null = null,
-        userAnswer: string | null = null) {
+        userAnswer: string | null = null,
+        expired: boolean) {
 
         this.id = id
         this.huntId = huntId
@@ -30,5 +32,6 @@ export class Hint {
         this.userScore = userScore
         this.answers = answers
         this.userAnswer = userAnswer
+        this.expired = expired
     }
 }

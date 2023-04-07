@@ -20,18 +20,22 @@ export class HintService {
 
         const { data: hints, error: error } = await supabase
             .from('hint')
-            .select('*')
+            .select('*, hunt!inner(end_date)')
             .eq('hunt_id', huntId)
             .order('order', { ascending: true })
 
         if (hints == null) return []
+
+        let currentDate = new Date()
+        let processedEndDate = new Date(hints[0].hunt?.end_date)
+        let expired = currentDate > processedEndDate
 
         return hints.map((hint) => {
             const score = hintScores.filter((hintScore) => {
                 if (hintScore.hintId == hint.id) return hintScore
             })[0]
 
-            return new Hint(hint.id, hint.hunt_id, hint.question, hint.image_url, hint.order, hint.max_value, score?.score, null, null)
+            return new Hint(hint.id, hint.hunt_id, hint.question, hint.image_url, hint.order, hint.max_value, score?.score, null, null, expired)
         })
     }
 
@@ -44,14 +48,18 @@ export class HintService {
 
         const { data: hints, error: error } = await supabase
             .from('hint')
-            .select('*')
+            .select('*, hunt!inner(end_date)')
             .eq('id', hintId)
 
         if (hints == null || !hints[0] || error) throw this.hintFetchError
 
         const hint = hints[0]
 
+        let currentDate = new Date()
+        let processedEndDate = new Date(hint.hunt?.end_date)
+        let expired = currentDate > processedEndDate
+
         return new Hint(hint.id, hint.hunt_id, hint.question, hint.image_url, hint.order, hint.max_value, response?.score, answers, 
-            response?.answerText)
+            response?.answerText, expired)
     }
 }

@@ -44,6 +44,9 @@
                 <v-chip class="ma-1" :color="ScoreUtility.scoreToColour(hint.userScore, hint.maxValue)">{{ hint.userScore }}</v-chip>
                 {{ `/ ${hint.maxValue}` }}
               </v-row>
+              <v-row v-else-if="hint.expired" class="justify-center align-center ma-1">
+                <v-chip class="ma-1" color="pink">U</v-chip>
+              </v-row>
               <v-row v-else-if="hints[index-1]?.userScore" class="justify-center align-center ma-1">
                 <v-chip class="ma-1" color="orange">In Progress</v-chip>
               </v-row>
@@ -51,12 +54,12 @@
             <td>
               <v-btn 
                 @click="goToHint(hint.id)" 
-                :prepend-icon="hint.userScore ? 'mdi-check-circle' : index == 0 || hints[index-1]?.userScore ? 'mdi-pencil' : 'mdi-cancel'" 
+                :prepend-icon="actionButtonIcon(hint, index)" 
                 :disabled="!hintAvailable(index)"
                 variant="outlined"
-                :color="hint.userScore ? 'teal' : index == 0 || hints[index-1]?.userScore ? 'deep-orange' : 'pink'"
+                :color="actionButtonColor(hint, index)"
               >
-                {{ hint.userScore ? 'Answered' : index == 0 || hints[index-1]?.userScore ? 'Start' : 'Unavailable' }}
+                {{ actionButtonText(hint, index) }}
               </v-btn>
             </td>
           </tr>
@@ -68,6 +71,15 @@
           type="success"
           title="Hunt Completed"
           text="You have successfully completed this hunt!"
+          variant="tonal"
+          class="ma-2"
+        ></v-alert>
+
+        <v-alert
+          v-else-if="hints[0]?.expired"
+          type="warning"
+          title="Hunt Closed"
+          text="This hunt has now closed, further responses are not accepted."
           variant="tonal"
           class="ma-2"
         ></v-alert>
@@ -133,6 +145,8 @@
   const hintAvailable = (index: number): boolean =>  {
     if (index == 0 && hints.value[index]?.userScore == null) return true
 
+    if (hints.value[index].expired) return true
+
     return (hints.value[index]?.userScore != null || hints.value[index-1]?.userScore != null)
   }
 
@@ -148,5 +162,35 @@
 
   const huntIsComplete = () => {
     return hints?.value[hints.value.length-1]?.userScore != null
+  }
+
+  const actionButtonText = (hint: Hint, index: any) => {
+    if (hint.userScore) return 'Answered'
+
+    if (hint.expired) return 'Unanswered'
+
+    if (index == 0 || hints.value[index-1]?.userScore) return 'Start'
+
+    return 'Unavailable'
+  }
+
+  const actionButtonColor = (hint: Hint, index: any) => {
+    if (hint.userScore) return 'teal'
+
+    if (hint.expired) return 'grey'
+
+    if (index == 0 || hints.value[index-1]?.userScore) return 'deep-orange'
+
+    return 'pink'
+  }
+
+  const actionButtonIcon = (hint: Hint, index: any) => {
+    if (hint.userScore) return 'mdi-check-circle'
+
+    if (hint.expired) return 'mdi-minus-circle'
+
+    if (index == 0 || hints.value[index-1]?.userScore) return 'mdi-pencil'
+
+    return 'mdi-cancel'
   }
 </script>

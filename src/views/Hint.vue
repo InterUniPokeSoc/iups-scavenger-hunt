@@ -25,21 +25,22 @@
 
               <v-text-field 
                 v-model="answer" 
+                v-if="!hint.expired"
                 label="Your Answer"
                 :prepend-inner-icon="correct ? 'mdi-check-circle' : incorrect ? 'mdi-close-circle' : ''"
                 :error="incorrect"
                 :persistent-hint="true"
                 :hint="incorrect && !correct ? 'Please try again!' : ''"
                 variant="outlined" 
-                :disabled="correct || checking"
+                :disabled="correct || checking || hint.expired"
                 :loading="checking"
                 class="ma-3"
               >
               </v-text-field>
 
               <v-btn @click="checkAnswer()" 
-              v-if="!correct" 
-              :disabled="correct || checking" 
+              v-if="!correct && !hint.expired" 
+              :disabled="correct || checking || hint.expired" 
               :loading="checking"
               variant="flat" 
               size="large" 
@@ -56,13 +57,22 @@
                 variant="tonal"
               ></v-alert>
 
+              <v-alert
+                v-else-if="hint.expired"
+                type="warning"
+                title="Hint Closed"
+                text="This hint has now closed, further responses are not accepted."
+                variant="tonal"
+                class="ma-2"
+              ></v-alert>
+
               <v-col v-if="hint.userScore" class="justify-center align-center ma-1">
                 <h2>You Scored</h2>
                 <v-chip class="ma-1" :color="ScoreUtility.scoreToColour(hint.userScore, hint.maxValue)">{{ hint.userScore }}</v-chip>
                 {{ `/ ${hint.maxValue}` }}
               </v-col>
 
-              <v-expansion-panels v-if="hint.userScore" variant="popout">
+              <v-expansion-panels v-if="hint.userScore || hint.expired" variant="popout">
                 <v-expansion-panel
                   title="Answers"
                 >
