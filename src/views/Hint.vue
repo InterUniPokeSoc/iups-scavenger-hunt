@@ -151,7 +151,7 @@
       href: './',
     },
     {
-      title: `Hunt ${Number(huntId.value) + 1}`,
+      title: `Hunt ${Number(huntId.value)}`,
       disabled: false,
       href: './hunt',
     },

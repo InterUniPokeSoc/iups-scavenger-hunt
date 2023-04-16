@@ -30,7 +30,7 @@
                   class="justify-center align-center ma-3"
                   variant="outlined"
 
-                  :title="'Hunt ' + (hunt.id + 1)"
+                  :title="'Hunt ' + (hunt.id)"
                   :subtitle="`${new Date(hunt.startDate).toLocaleDateString('en-GB')} - ${new Date(hunt.endDate).toLocaleDateString('en-GB')}`"
                 >
                   <v-card-text class="justify-center align-center">

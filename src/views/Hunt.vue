@@ -17,7 +17,7 @@
       <v-responsive v-else class="d-flex align-center text-center fill-height" id="main-responsive-container">
         <v-breadcrumbs :items="breadcrumbs"></v-breadcrumbs>
 
-        <h1 class="ma-2">Hunt {{ Number(huntId) + 1 }} Questions</h1>
+        <h1 class="ma-2">Hunt {{ Number(huntId) }} Questions</h1>
 
         <v-table class="elevation-1 ma-2">
           <thead>
@@ -117,7 +117,7 @@
       href: './',
     },
     {
-      title: `Hunt ${Number(huntId.value) + 1}`,
+      title: `Hunt ${Number(huntId.value)}`,
       disabled: true,
     },
   ])
