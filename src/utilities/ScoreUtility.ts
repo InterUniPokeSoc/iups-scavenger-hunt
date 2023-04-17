@@ -29,6 +29,8 @@ export class ScoreUtility {
         if (userScore == 0) return 'F'
         if (userScore == hunt.maxScore) return 'S'
 
+        console.log(`userscore(${userScore}) hunt.maxScore(${hunt.maxScore}) are EQUAL(${userScore == hunt.maxScore}))`)
+
         let scores = await ResponseService.fetchAllScoresFor(hunt.id, true)
         
         if (scores == null) throw this.scoreError

@@ -47,14 +47,14 @@
                   <v-list-item-title>
                     Discussion
                   </v-list-item-title>
-                  <v-list-item-subtitle class="wrap-text">You may share stuff related to Hints if SPOILER TAGGGED, bare in mind this may give others an advantage.</v-list-item-subtitle>
+                  <v-list-item-subtitle class="wrap-text">You may share stuff related to Hints if in the relevant forum post, bare in mind this may give others an advantage.</v-list-item-subtitle>
                 </v-list-item>
 
                 <v-list-item class="ma-2">
                   <v-list-item-title>
                     Sharing Answers
                   </v-list-item-title>
-                  <v-list-item-subtitle class="wrap-text">DO NOT share answers (answering as a group is fine), this will result in a score of 0 being allocated.</v-list-item-subtitle>
+                  <v-list-item-subtitle class="wrap-text">DO NOT share answers (answering as a group is fine), this may result in a score of 0 being allocated.</v-list-item-subtitle>
                 </v-list-item>
               </v-list>
             </v-card-text>

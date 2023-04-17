@@ -56,9 +56,11 @@ export class HuntService {
             if (huntScores) {
                 const score = huntScores.reduce((sum, huntScoreData) => sum += huntScoreData.score, 0)
 
-                let tier = !participation?.excluded ? await ScoreUtility.scoreToTier(score, hunt) : null
+                let huntObject = new Hunt(hunt.id, hunt.start_date, hunt.end_date, hunt.hidden, score, hunt.max_score, participation, null)
 
-                return new Hunt(hunt.id, hunt.start_date, hunt.end_date, hunt.hidden, score, hunt.max_score, participation, tier)
+                huntObject.tier = !participation?.excluded ? await ScoreUtility.scoreToTier(score, huntObject) : null
+
+                return huntObject
             }
 
             return new Hunt(hunt.id, hunt.start_date, hunt.end_date, hunt.hidden, 0, 0, participation)
